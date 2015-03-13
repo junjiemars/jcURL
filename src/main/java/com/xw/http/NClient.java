@@ -7,8 +7,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,34 +17,44 @@ import java.net.URISyntaxException;
  * Created by junjie on 3/5/2015.
  */
 public final class NClient {
-    public static boolean post(final String url, final HttpRequestBuilder builder) {
-        final URI uri = check(url, builder);
+    public static boolean post(final String url,
+                               final RequestBuilder requested,
+                               final PipelineBuilder pipelined) {
+        final URI uri = check(url, requested, pipelined);
         if (null == uri) {
             return (false);
         }
 
-        final HttpRequest p = builder.setup(_build(uri, HttpMethod.POST));
-        return (request(uri, p));
+        final HttpRequest p = requested.setup(_build(uri, HttpMethod.POST));
+        return (request(uri, p, pipelined));
     }
 
-    public static boolean get(final String url, final HttpRequestBuilder builder) {
-        final URI uri = check(url, builder);
+    public static boolean get(final String url,
+                              final RequestBuilder requested,
+                              final PipelineBuilder pipelined) {
+        final URI uri = check(url, requested, pipelined);
         if (null == uri) {
             return (false);
         }
 
-        final HttpRequest p = builder.setup(_build(uri, HttpMethod.GET));
-        return (request(uri, p));
+        final HttpRequest p = requested.setup(_build(uri, HttpMethod.GET));
+        return (request(uri, p, pipelined));
     }
 
-    private static final URI check(final String url, final HttpRequestBuilder builder) {
+    private static final URI check(final String url,
+                                   final RequestBuilder requested,
+                                   final PipelineBuilder pipelined) {
         if (H.is_null_or_empty(url)) {
             _l.warn("arg:url is null/empty");
             return (null);
         }
-        if (null == builder) {
-            _l.warn("arg:builder is null");
+        if (null == requested) {
+            _l.warn("arg:requested is null");
             return (null);
+        }
+
+        if (null == pipelined) {
+            _l.warn("arg:pipelined is null");
         }
 
         final URI uri = _to_uri(url);
@@ -56,18 +64,21 @@ public final class NClient {
         return (uri);
     }
 
-    private static boolean request(final URI uri, final HttpRequest request) {
+    private static boolean request(final URI uri,
+                                   final HttpRequest requested,
+                                   final PipelineBuilder pipelined) {
         final EventLoopGroup group = new NioEventLoopGroup();
         try {
             final Bootstrap b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
-                    .handler(new NClientInitializer());
+                    .handler(new NClientInitializer(pipelined));
 
-            final ChannelFuture f = b.connect(uri.getHost(), (-1 == uri.getPort() ? 80 : uri.getPort()));
-            final Channel c = f.sync().channel();
+            final Channel c = b.connect(uri.getHost(),
+                    (-1 == uri.getPort() ? 80 : uri.getPort()))
+                    .sync().channel();
 
-            c.writeAndFlush(request);
+            c.writeAndFlush(requested);
             c.closeFuture().sync();
             return (true);
         } catch (final Exception e) {

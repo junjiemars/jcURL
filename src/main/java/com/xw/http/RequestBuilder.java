@@ -6,9 +6,6 @@ import io.netty.handler.codec.http.*;
  * Author: junjie
  * Date: 3/12/15.
  */
-public abstract class HttpRequestBuilder {
-
-
-
+public abstract class RequestBuilder {
     public abstract HttpRequest setup(final HttpRequest request);
 }

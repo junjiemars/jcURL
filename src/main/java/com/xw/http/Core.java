@@ -2,11 +2,10 @@ package com.xw.http;
 
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
+import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import javax.swing.text.html.Option;
 
 /**
  * Author: junjie
@@ -59,9 +58,10 @@ public final class Core {
         _l.info("OPTIONS:\n=========================");
         _l.info(options);
         _l.info("RESPONSE:\n=========================");
-        final HttpRequestBuilder builder = new HttpRequestBuilder() {
+        final RequestBuilder requested = new RequestBuilder() {
             @Override
             public HttpRequest setup(HttpRequest request) {
+                // setup ur customized http headers/contents processing
                 request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
                 request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
 
@@ -73,7 +73,26 @@ public final class Core {
                 return (request);
             }
         };
-        NClient.get(options.url(), builder);
+        final PipelineBuilder pipelined = new PipelineBuilder() {
+            @Override
+            public ChannelPipeline setup(ChannelPipeline pipeline) {
+                // setup ur customized http response/contents processing
+                pipeline.addLast(new HttpClientCodec());
+
+                // auto decompression
+                pipeline.addLast(new HttpContentDecompressor());
+
+                // default http response processing
+                pipeline.addLast(new DefaultResponseHandler());
+
+                // default http content processing
+                pipeline.addLast(new DefaultContentHandler());
+
+                return (pipeline);
+            }
+        };
+
+        NClient.get(options.url(), requested, pipelined);
     }
 
     private static final void _help() {
