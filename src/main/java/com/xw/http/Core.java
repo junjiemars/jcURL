@@ -12,6 +12,8 @@ import org.apache.logging.log4j.Logger;
  * Date: 3/12/15.
  */
 public final class Core {
+    private static final Logger _l = LogManager.getLogger(Core.class);
+
     private Core() {
     }
 
@@ -58,6 +60,7 @@ public final class Core {
         _l.info("OPTIONS:\n=========================");
         _l.info(options);
         _l.info("RESPONSE:\n=========================");
+        _l.info(String.format("<Tid:%s>", H.tid()));
         final RequestBuilder requested = new RequestBuilder() {
             @Override
             public HttpRequest setup(HttpRequest request) {
@@ -107,6 +110,4 @@ public final class Core {
         _l.info("\t--url: specify the http url");
         System.exit(0);
     }
-
-    private static final Logger _l = LogManager.getLogger(Core.class);
 }

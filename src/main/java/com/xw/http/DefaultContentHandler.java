@@ -2,7 +2,8 @@ package com.xw.http;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,12 +20,13 @@ public class DefaultContentHandler extends SimpleChannelInboundHandler<HttpConte
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpContent content) {
-            _l.info(content.content().toString(CharsetUtil.UTF_8));
+        _l.info(String.format("<Tid:%s>", H.tid()));
+        _l.info(content.content().toString(CharsetUtil.UTF_8));
 
-            if (content instanceof LastHttpContent) {
-                _l.info("} END OF CONTENT");
-                ctx.close();
-            }
+        if (content instanceof LastHttpContent) {
+            _l.info("} END OF CONTENT");
+            ctx.close();
+        }
     }
 
     private static final Logger _l = LogManager.getLogger(DefaultContentHandler.class);

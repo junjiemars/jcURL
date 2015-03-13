@@ -13,24 +13,25 @@ import org.apache.logging.log4j.Logger;
  */
 public final class DefaultResponseHandler extends SimpleChannelInboundHandler<HttpResponse> {
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, HttpResponse msg) throws Exception {
-        _l.info("STATUS: " + msg.status());
-        _l.info("VERSION: " + msg.protocolVersion());
+    protected void channelRead0(ChannelHandlerContext ctx, HttpResponse response) throws Exception {
+        _l.info(String.format("<Tid:%s>", H.tid()));
+        _l.info("STATUS: " + response.status());
+        _l.info("VERSION: " + response.protocolVersion());
 
-        if (!msg.headers().isEmpty()) {
-            for (CharSequence name : msg.headers().names()) {
-                for (CharSequence value : msg.headers().getAll(name)) {
+        if (!response.headers().isEmpty()) {
+            for (CharSequence name : response.headers().names()) {
+                for (CharSequence value : response.headers().getAll(name)) {
                     _l.info("HEADER: " + name + " = " + value);
                 }
             }
         }
 
-        if (HttpHeaderUtil.isTransferEncodingChunked(msg)) {
+        if (HttpHeaderUtil.isTransferEncodingChunked(response)) {
             _l.info("CHUNKED CONTENT {");
         } else {
             _l.info("CONTENT {");
         }
-        _l.info(msg);
+        _l.info(response);
     }
 
     private static final Logger _l = LogManager.getLogger(DefaultResponseHandler.class);

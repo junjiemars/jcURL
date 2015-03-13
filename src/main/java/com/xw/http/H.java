@@ -52,6 +52,10 @@ public final class H {
     public static final boolean is_null_or_empty(final String s) {
         return (null == s || s.length() == 0);
     }
+
+    public static final long tid() {
+        return (Thread.currentThread().getId());
+    }
 //
 //    public static final <T> boolean is_null_or_empty(final T[] array) {
 //        if (null == array || array.length == 0) {
