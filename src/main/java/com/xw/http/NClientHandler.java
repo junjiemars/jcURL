@@ -1,18 +1,21 @@
+package com.xw.http;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Created by junjie on 3/5/2015.
  */
-public class NHttpClientHandler extends SimpleChannelInboundHandler<HttpObject> {
-  @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-//    super.exceptionCaught(ctx, cause);
-    cause.printStackTrace();
-    ctx.close();
-  }
+public class NClientHandler extends SimpleChannelInboundHandler<HttpObject> {
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        ctx.close();
+        _l.error(cause.getMessage());
+    }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpObject msg) {
@@ -24,8 +27,8 @@ public class NHttpClientHandler extends SimpleChannelInboundHandler<HttpObject> 
             System.err.println();
 
             if (!response.headers().isEmpty()) {
-                for (CharSequence name: response.headers().names()) {
-                    for (CharSequence value: response.headers().getAll(name)) {
+                for (CharSequence name : response.headers().names()) {
+                    for (CharSequence value : response.headers().getAll(name)) {
                         System.err.println("HEADER: " + name + " = " + value);
                     }
                 }
@@ -50,4 +53,6 @@ public class NHttpClientHandler extends SimpleChannelInboundHandler<HttpObject> 
             }
         }
     }
+
+    private static final Logger _l = LogManager.getLogger(NClientHandler.class);
 }

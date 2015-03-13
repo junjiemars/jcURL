@@ -1,3 +1,5 @@
+package com.xw.http;
+
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -9,23 +11,11 @@ import io.netty.handler.ssl.SslContext;
  * Author: junjie
  * Date: 3/9/15.
  */
-public class NHttpClientInitializer extends ChannelInitializer<SocketChannel> {
-
-    private final SslContext sslCtx;
-
-    public NHttpClientInitializer(SslContext sslCtx) {
-        this.sslCtx = sslCtx;
-    }
+public final class NClientInitializer extends ChannelInitializer<SocketChannel> {
 
     @Override
     public void initChannel(SocketChannel ch) {
-        ChannelPipeline p = ch.pipeline();
-
-        // Enable HTTPS if necessary.
-        if (sslCtx != null) {
-            p.addLast(sslCtx.newHandler(ch.alloc()));
-        }
-
+        final ChannelPipeline p = ch.pipeline();
         p.addLast(new HttpClientCodec());
 
         // Remove the following line if you don't want automatic content decompression.
@@ -34,6 +24,6 @@ public class NHttpClientInitializer extends ChannelInitializer<SocketChannel> {
         // Uncomment the following line if you don't want to handle HttpContents.
         //p.addLast(new HttpObjectAggregator(1048576));
 
-        p.addLast(new NHttpClientHandler());
+        p.addLast(new NClientHandler());
     }
 }
