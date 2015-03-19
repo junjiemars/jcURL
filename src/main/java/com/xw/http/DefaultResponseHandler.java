@@ -26,12 +26,12 @@ public final class DefaultResponseHandler extends SimpleChannelInboundHandler<Ht
             }
         }
 
-        if (HttpHeaderUtil.isTransferEncodingChunked(response)) {
-            _l.info("CHUNKED CONTENT {");
-        } else {
-            _l.info("CONTENT {");
-        }
-        _l.info(response);
+//        if (HttpHeaderUtil.isTransferEncodingChunked(response)) {
+//            _l.info("CHUNKED CONTENT {");
+//        } else {
+//            _l.info("CONTENT {");
+//        }
+//        _l.info(response);
     }
 
     private static final Logger _l = LogManager.getLogger(DefaultResponseHandler.class);

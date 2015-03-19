@@ -40,3 +40,7 @@ task uberjar(type: Jar, dependsOn:jar/*,dependsOn:[':compileJava',':compileGroov
         )
     }
 }
+
+task where << {
+	configurations.compile.each { println it }
+}
