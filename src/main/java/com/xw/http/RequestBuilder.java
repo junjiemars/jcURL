@@ -72,7 +72,7 @@ public abstract class RequestBuilder {
 
     public abstract FullHttpRequest setup(final FullHttpRequest request);
 
-    private static final URI _to_uri(final String url) {
+    private static URI _to_uri(final String url) {
         if (H.is_null_or_empty(url)) {
             _l.warn("<arg:url> is invalid");
             return (null);

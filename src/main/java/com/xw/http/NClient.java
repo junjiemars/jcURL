@@ -14,9 +14,15 @@ import org.apache.logging.log4j.Logger;
 import java.net.URI;
 
 /**
- * Created by junjie on 3/5/2015.
+ * Author: junjie
+ * Date: 3/5/2015.
+ * Target: <>
  */
 public final class NClient {
+    private NClient() {
+        // forbidden
+    }
+
     public static boolean post(final RequestBuilder requested, final PipelineBuilder pipelined) {
         if (!_check_args(requested, pipelined)) return (false);
 
@@ -31,7 +37,7 @@ public final class NClient {
         return (request(requested.uri(), p, pipelined));
     }
 
-    private static final boolean _check_args(final RequestBuilder requested, final PipelineBuilder pipelined) {
+    private static boolean _check_args(final RequestBuilder requested, final PipelineBuilder pipelined) {
         if (null == requested) {
             _l.error("<arg:requested> is invalid");
             return (false);
@@ -44,7 +50,7 @@ public final class NClient {
         return (true);
     }
 
-    private static final boolean request(final URI uri,
+    private static boolean request(final URI uri,
                                          final FullHttpRequest requested,
                                          final PipelineBuilder pipelined) {
         final EventLoopGroup group = new NioEventLoopGroup();

@@ -9,10 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.Charset;
-import java.util.List;
 /* just since JDK1.7 (Java7)
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,7 +22,7 @@ import java.util.List;
  * Date: 12/17/14.
  */
 public final class H {
-    public static final String[] EMPTY_STR_ARRAY = new String[]{};
+//    public static final String[] EMPTY_STR_ARRAY = new String[]{};
     private static final Charset _UTF8 = Charset.forName("UTF-8");
 
     private static final Logger _out = LogManager.getLogger(H.class);
@@ -33,7 +30,7 @@ public final class H {
     private H() {
     }
 
-    public static final String pad_right(final String s, final int length, final String c) {
+    public static String pad_right(final String s, final int length, final String c) {
         if (is_null_or_empty(s) || is_non_negative(s.length() - length) || is_null_or_empty(c)) {
             return (s);
         }
@@ -44,16 +41,14 @@ public final class H {
         }
 
         final String p = repeat(c, _floor_div(d, c.length()));
-        final String t = s.concat(p);
-
-        return (t);
+        return (s.concat(p));
     }
 
-    public static final boolean is_null_or_empty(final String s) {
+    public static boolean is_null_or_empty(final String s) {
         return (null == s || s.length() == 0);
     }
 
-    public static final long tid() {
+    public static long tid() {
         return (Thread.currentThread().getId());
     }
 //
@@ -96,9 +91,8 @@ public final class H {
 //        return (null);
 //    }
 
-    public static final <T> String format(Class<T> clazz, final String arg) {
-        final String s = String.format("%s::%s", clazz.getSimpleName(), arg);
-        return (s);
+    public static <T> String format(Class<T> clazz, final String arg) {
+        return (String.format("%s::%s", clazz.getSimpleName(), arg));
     }
 
     public static <T> T from_json(final String json, final Type type) {
@@ -108,8 +102,7 @@ public final class H {
 
         final Gson gson = new Gson();
         try {
-            final T t = gson.fromJson(json, type);
-            return (t);
+            return (gson.fromJson(json, type));
         } catch (JsonSyntaxException e) {
             _out.error(e);
         } catch (JsonParseException e) {
@@ -125,9 +118,7 @@ public final class H {
         }
 
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        final String j = gson.toJson(t, type);
-
-        return (j);
+        return (gson.toJson(t, type));
     }
 // NOTE: just since JDK1.7
 //    public static final String read_file(final String file) {
@@ -143,7 +134,7 @@ public final class H {
 //        return (s);
 //    }
 
-    public static final String read_file(final String file) {
+    public static String read_file(final String file) {
         if (is_null_or_empty(file)) {
             _out.error("<arg:file> is invalid");
             return (null);
@@ -169,7 +160,9 @@ public final class H {
                     }
                 }
             } finally {
-                in.close();
+                if (in != null) {
+                    in.close();
+                }
             }
         } catch (final FileNotFoundException e) {
             _out.error(e);
@@ -190,7 +183,7 @@ public final class H {
 //        }
 //    }
 
-    public static final void write_file(final String json, final String file) {
+    public static void write_file(final String json, final String file) {
         if (is_null_or_empty(json) || is_null_or_empty(file)) {
             _out.error("<arg:json:file> is invalid");
             return;
@@ -202,7 +195,9 @@ public final class H {
                 out = new BufferedOutputStream(new FileOutputStream(file));
                 out.write(json.getBytes(_UTF8));
             } finally {
-                out.close();
+                if (out != null) {
+                    out.close();
+                }
             }
         } catch (final FileNotFoundException e) {
             _out.error(e);
@@ -227,11 +222,11 @@ public final class H {
 //        return (null);
 //    }
 
-    private static final boolean is_non_negative(final int n) {
+    private static boolean is_non_negative(final int n) {
         return (n >= 0);
     }
 
-    private static final String repeat(final String s, final int c) {
+    private static String repeat(final String s, final int c) {
         if (is_null_or_empty(s) || c < 1) {
             return (s);
         }
@@ -244,7 +239,7 @@ public final class H {
         return (b.toString());
     }
 
-    private static final int _floor_div(int x, int y) {
+    private static int _floor_div(int x, int y) {
         int r = x / y;
         // if the signs are different and modulo not zero, round down
         if ((x ^ y) < 0 && (r * y != x)) {

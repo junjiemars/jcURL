@@ -2,10 +2,8 @@ package com.xw.http;
 
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -99,7 +97,7 @@ public final class Core {
         }
     }
 
-    private static final void _http_get(final Options options) {
+    private static void _http_get(final Options options) {
         _info(options);
 
         final RequestBuilder requested = new RequestBuilder(options.url()) {
@@ -139,7 +137,7 @@ public final class Core {
         NClient.get(requested, pipelined);
     }
 
-    private static final void _http_post(final Options options) {
+    private static void _http_post(final Options options) {
         _info(options);
 
         final RequestBuilder requested = new RequestBuilder(options.url(), options.content()) {
@@ -190,11 +188,11 @@ public final class Core {
         _l.info(String.format("<Tid:%s>", H.tid()));
     }
 
-    private static final void _help() {
+    private static void _help() {
         _help(null);
     }
 
-    private static final void _help(final String m) {
+    private static void _help(final String m) {
         if (null != m) {
             _l.info(m);
         }
