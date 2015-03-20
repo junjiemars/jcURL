@@ -2,9 +2,11 @@ package com.xw.http;
 
 
 import com.google.gson.reflect.TypeToken;
+import io.netty.handler.codec.http.HttpMethod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.swing.text.html.Option;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,15 +23,23 @@ public final class Options {
     private static final Type _type = new TypeToken<Options>() {}.getType();
 
     private String _url;
+    private HttpMethod _method;
+    private String _content;
 
-    public Options() {
-
+    public Options(final String url, final HttpMethod method, final String content) {
+        _url = url;
+        _method = method;
+        _content = content;
     }
 
     public final String url() { return (_url); }
 
-    public final String url(final String url) {
-        return (_url = url);
+    public final HttpMethod method() {
+        return (_method);
+    }
+
+    public final String content() {
+        return (_content);
     }
 
     public static final Options read(final String conf) {
@@ -47,15 +57,10 @@ public final class Options {
         H.write_file(j, conf);
     }
 
-
-    public final String logger_config() {
-        return (A.LOG4J_CONFIG_PROPERTY);
-    }
-
     @Override
     public String toString() {
         final String s = H.to_json(this, _type);
-        save(this, A.OPTIONS_CONFIG_FILE);
+//        save(this, A.OPTIONS_CONFIG_FILE);
         return (s);
     }
 

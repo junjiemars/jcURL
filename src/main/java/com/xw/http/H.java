@@ -33,21 +33,21 @@ public final class H {
     private H() {
     }
 
-//    public static final String pad_right(final String s, final int length, final String c) {
-//        if (is_null_or_empty(s) || is_non_negative(s.length() - length) || is_null_or_empty(c)) {
-//            return (s);
-//        }
-//
-//        final int d = length - s.length();
-//        if (d < c.length()) {
-//            return (s);
-//        }
-//
-//        final String p = repeat(c, _floor_div(d, c.length()));
-//        final String t = s.concat(p);
-//
-//        return (t);
-//    }
+    public static final String pad_right(final String s, final int length, final String c) {
+        if (is_null_or_empty(s) || is_non_negative(s.length() - length) || is_null_or_empty(c)) {
+            return (s);
+        }
+
+        final int d = length - s.length();
+        if (d < c.length()) {
+            return (s);
+        }
+
+        final String p = repeat(c, _floor_div(d, c.length()));
+        final String t = s.concat(p);
+
+        return (t);
+    }
 
     public static final boolean is_null_or_empty(final String s) {
         return (null == s || s.length() == 0);
@@ -144,9 +144,18 @@ public final class H {
 //    }
 
     public static final String read_file(final String file) {
-        final File f = new File(file);
-        final byte[] b = new byte[(int) f.length()];
+        if (is_null_or_empty(file)) {
+            _out.error("<arg:file> is invalid");
+            return (null);
+        }
 
+        final File f = new File(file);
+        if (!f.exists()) {
+            _out.warn(String.format("<file:%s> does not exists", file));
+            return (null);
+        }
+
+        final byte[] b = new byte[(int) f.length()];
         try {
             InputStream in = null;
             try {
@@ -183,6 +192,7 @@ public final class H {
 
     public static final void write_file(final String json, final String file) {
         if (is_null_or_empty(json) || is_null_or_empty(file)) {
+            _out.error("<arg:json:file> is invalid");
             return;
         }
 
