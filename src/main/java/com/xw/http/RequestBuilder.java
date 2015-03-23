@@ -3,6 +3,7 @@ package com.xw.http;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.AsciiString;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 
 
 /**
@@ -25,7 +27,9 @@ public abstract class RequestBuilder {
         _uri = _to_uri(url);
         _content = (H.is_null_or_empty(data)
                 ? null :
-                PooledByteBufAllocator.DEFAULT.heapBuffer().setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
+                Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
+                //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
+
     }
 
     public final URI uri() {
@@ -52,6 +56,7 @@ public abstract class RequestBuilder {
                 _content);
 
         request.headers().set(HttpHeaderNames.HOST, _uri.getHost());
+        request.headers().set(HttpHeaderNames.ACCEPT_CHARSET, CharsetUtil.UTF_8);
 
         return (setup(request));
     }
@@ -73,6 +78,8 @@ public abstract class RequestBuilder {
     }
 
     public abstract FullHttpRequest setup(final FullHttpRequest request);
+
+    public static final AsciiString TEXT_XML = new AsciiString("text/xml;charset=utf-8");
 
     private static URI _to_uri(final String url) {
         if (H.is_null_or_empty(url)) {

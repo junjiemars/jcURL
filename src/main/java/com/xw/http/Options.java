@@ -3,8 +3,12 @@ package com.xw.http;
 
 import com.google.gson.reflect.TypeToken;
 import io.netty.handler.codec.http.HttpMethod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Type;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Author: junjie
@@ -23,8 +27,8 @@ public final class Options {
     public Options(final String url, final HttpMethod method, final String data, final int header) {
         _url = url;
         _method = method;
-        _data = data;
         _header = header;
+        _data = _rebuild_data(data);
     }
 
     public final String url() {
@@ -66,5 +70,18 @@ public final class Options {
         return (H.to_json(this, _type));
     }
 
-//    private static final Logger _l = LogManager.getLogger(Options.class);
+    private static String _rebuild_data(final String data) {
+        final Matcher m = _data_pattern.matcher(data);
+        if (m.find()) {
+            _l.info(m.group(1));
+            final String f = H.read_file(m.group(1));
+            if (!H.is_null_or_empty(f)) {
+                return (f);
+            }
+        }
+        return (data);
+    }
+
+    private static final Logger _l = LogManager.getLogger(Options.class);
+    private static final Pattern _data_pattern = Pattern.compile("@([\\.\\w\\S]+)");
 }

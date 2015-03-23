@@ -4,6 +4,7 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -150,20 +151,24 @@ public final class Core {
     private static void _http_post(final Options options) {
         _info(options);
 
+        _l.info(H.pad_right("RESPONSE:", A.OPTION_PROMPT_LEN, "="));
+        _l.info(String.format("<Tid:%s>", H.tid()));
+
         final RequestBuilder requested = new RequestBuilder(options.url(), options.data()) {
             @Override
             public FullHttpRequest setup(FullHttpRequest request) {
                 // setup ur customized http headers/contents processing
                 request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-                request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
-                request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.DEFLATE);
+//                request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
+                request.headers().set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML);
 
-                request.headers().set(
-                        HttpHeaderNames.COOKIE,
-                        ClientCookieEncoder.encode(
-                                new DefaultCookie("my-cookie", "foo"),
-                                new DefaultCookie("another-cookie", "bar")));
+//                request.headers().set(
+//                        HttpHeaderNames.COOKIE,
+//                        ClientCookieEncoder.encode(
+//                                new DefaultCookie("my-cookie", "foo"),
+//                                new DefaultCookie("another-cookie", "bar")));
 
+                _info_headers(request.headers());
                 return (request);
             }
         };
@@ -197,11 +202,21 @@ public final class Core {
 
 
     private static void _info(Options options) {
+        _l.info(H.pad_right("PWD:", A.OPTION_PROMPT_LEN, "="));
+        _l.info(System.getProperty("user.dir"));
         _l.info(H.pad_right("OPTIONS:", A.OPTION_PROMPT_LEN, "="));
         _l.info(options);
         _l.info(H.pad_right(String.format("%s:", options.method()), A.OPTION_PROMPT_LEN, "="));
-        _l.info(H.pad_right("RESPONSE:", A.OPTION_PROMPT_LEN, "="));
-        _l.info(String.format("<Tid:%s>", H.tid()));
+    }
+
+    private static void _info_headers(final HttpHeaders h) {
+        if (!h.isEmpty()) {
+            for (CharSequence name : h.names()) {
+                for (CharSequence value : h.getAll(name)) {
+                    _l.info("HEADER: " + name + " = " + value);
+                }
+            }
+        }
     }
 
     private static void _help() {

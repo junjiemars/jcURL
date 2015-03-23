@@ -183,8 +183,8 @@ public final class H {
 //        }
 //    }
 
-    public static void write_file(final String json, final String file) {
-        if (is_null_or_empty(json) || is_null_or_empty(file)) {
+    public static void write_file(final String content, final String file) {
+        if (is_null_or_empty(content) || is_null_or_empty(file)) {
             _out.error("<arg:json:file> is invalid");
             return;
         }
@@ -193,7 +193,7 @@ public final class H {
             OutputStream out = null;
             try {
                 out = new BufferedOutputStream(new FileOutputStream(file));
-                out.write(json.getBytes(_UTF8));
+                out.write(content.getBytes(_UTF8));
             } finally {
                 if (out != null) {
                     out.close();
@@ -205,7 +205,6 @@ public final class H {
             _out.error(e);
         }
     }
-
 
     public static final int str_to_int(final String s, final int d) {
         if (is_null_or_empty(s)) {
