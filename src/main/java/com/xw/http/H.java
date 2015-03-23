@@ -206,6 +206,22 @@ public final class H {
         }
     }
 
+
+    public static final int str_to_int(final String s, final int d) {
+        if (is_null_or_empty(s)) {
+            return (d);
+        }
+
+        try {
+            final int i = Integer.parseInt(s);
+            return (i);
+        } catch (final NumberFormatException n) {
+            // do nothing
+        }
+
+        return (d);
+    }
+
 //
 //    public static final Long str_to_long(final String s) {
 //        if (null == s || s.length() == 0) {

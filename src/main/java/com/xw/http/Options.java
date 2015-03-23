@@ -17,12 +17,14 @@ public final class Options {
 
     private String _url;
     private HttpMethod _method;
-    private String _content;
+    private String _data;
+    private int _header; // 0:all; 1:header-only 2:content-only
 
-    public Options(final String url, final HttpMethod method, final String content) {
+    public Options(final String url, final HttpMethod method, final String data, final int header) {
         _url = url;
         _method = method;
-        _content = content;
+        _data = data;
+        _header = header;
     }
 
     public final String url() {
@@ -33,8 +35,16 @@ public final class Options {
         return (_method);
     }
 
-    public final String content() {
-        return (_content);
+    public final String data() {
+        return (_data);
+    }
+
+    public final boolean header() {
+        return (_header == 0 || 1 == (_header & 1));
+    }
+
+    public final boolean body() {
+        return (_header == 0 || 2 == (_header & 2));
     }
 
     public static Options read(final String conf) {

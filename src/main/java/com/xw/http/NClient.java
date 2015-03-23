@@ -58,11 +58,11 @@ public final class NClient {
             final Bootstrap b = new Bootstrap();
             b.group(group)
                     .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
+                    .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(NioSocketChannel ch) throws Exception {
                             if (pipelined != null) {
-                                pipelined.setup(ch.pipeline());
+                                pipelined.setup(pipelined.build(ch.pipeline()));
                             }
                         }
                     });

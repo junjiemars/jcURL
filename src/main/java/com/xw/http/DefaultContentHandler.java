@@ -3,6 +3,7 @@ package com.xw.http;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,12 +13,19 @@ import org.apache.logging.log4j.Logger;
  * Date: 3/5/2015.
  * Target: <>
  */
-public class DefaultContentHandler extends SimpleChannelInboundHandler<HttpContent> {
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-//    super.channelReadComplete(ctx);
-        _l.info("<READ COMPLETED>");
+public abstract class DefaultContentHandler<T> extends SimpleChannelInboundHandler<HttpContent> {
+    protected DefaultContentHandler() {
+        this(512);
     }
+
+    protected DefaultContentHandler(int capacity) {
+        _content = new StringBuilder(capacity);
+    }
+
+//    @Override
+//    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+//        _l.info("<READ COMPLETED>");
+//    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -27,16 +35,20 @@ public class DefaultContentHandler extends SimpleChannelInboundHandler<HttpConte
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpContent content) {
-        _l.info(String.format("<Tid:%s>", H.tid()));
-        _l.info(content.content().toString(CharsetUtil.UTF_8));
-        _l.info(content.content().maxCapacity());
+        _l.info(String.format("<Tid:%d|Len:%d>", H.tid(), content.content().capacity()));
 
-//
-//    if (content instanceof LastHttpContent) {
-//      _l.info("} END OF CONTENT");
-//      ctx.close();
-//    }
+        _content.append(content.content().toString(CharsetUtil.UTF_8));
+
+        if (content instanceof LastHttpContent) {
+            process(_content.toString());
+            content.release();
+            ctx.close();
+        }
     }
+
+    protected abstract T process(final String s);
+
+    private final StringBuilder _content;
 
     private static final Logger _l = LogManager.getLogger(DefaultContentHandler.class);
 

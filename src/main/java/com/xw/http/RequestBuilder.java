@@ -1,6 +1,7 @@
 package com.xw.http;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
@@ -16,14 +17,15 @@ import java.net.URISyntaxException;
  * Date: 3/12/15.
  */
 public abstract class RequestBuilder {
-    public RequestBuilder(final String url) {
+    protected RequestBuilder(final String url) {
         this(url, null);
     }
 
-    public RequestBuilder(final String url, final String content) {
+    protected RequestBuilder(final String url, final String data) {
         _uri = _to_uri(url);
-        _content = (H.is_null_or_empty(content)
-                ? null : Unpooled.copiedBuffer(content.getBytes(CharsetUtil.UTF_8)));
+        _content = (H.is_null_or_empty(data)
+                ? null :
+                PooledByteBufAllocator.DEFAULT.heapBuffer().setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
     }
 
     public final URI uri() {

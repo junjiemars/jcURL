@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
  * Author: junjie
  * Date: 3/13/15.
  */
-public final class DefaultResponseHandler extends SimpleChannelInboundHandler<HttpResponse> {
+public final class DefaultHeaderHandler extends SimpleChannelInboundHandler<HttpResponse> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpResponse response) throws Exception {
         _l.info(String.format("<Tid:%s>", H.tid()));
@@ -33,5 +33,5 @@ public final class DefaultResponseHandler extends SimpleChannelInboundHandler<Ht
 //        _l.info(response);
     }
 
-    private static final Logger _l = LogManager.getLogger(DefaultResponseHandler.class);
+    private static final Logger _l = LogManager.getLogger(DefaultHeaderHandler.class);
 }

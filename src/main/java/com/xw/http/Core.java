@@ -30,10 +30,11 @@ public final class Core {
                 new LongOpt("url", LongOpt.OPTIONAL_ARGUMENT, null, 'u'),
                 new LongOpt("get", LongOpt.NO_ARGUMENT, null, 'g'),
                 new LongOpt("post", LongOpt.NO_ARGUMENT, null, 'p'),
-                new LongOpt("content", LongOpt.OPTIONAL_ARGUMENT, null, 'b')
+                new LongOpt("data", LongOpt.OPTIONAL_ARGUMENT, null, 'd'),
+                new LongOpt("header", LongOpt.OPTIONAL_ARGUMENT, null, 'H')
         };
 
-        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpb:;", opts);
+        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:;", opts);
         g.setOpterr(true);
         int c;
 
@@ -41,7 +42,8 @@ public final class Core {
         String save = null;
         String url = null;
         HttpMethod method = null;
-        String content = null;
+        String data = null;
+        int header = 0;
 
         while ((c = g.getopt()) != -1)
             switch (c) {
@@ -60,8 +62,11 @@ public final class Core {
                 case 'p':
                     method = HttpMethod.POST;
                     break;
-                case 'b':
-                    content = g.getOptarg();
+                case 'd':
+                    data = g.getOptarg();
+                    break;
+                case 'H':
+                    header = H.str_to_int(g.getOptarg(), 0);
                     break;
                 case 'h':
                     _help();
@@ -79,7 +84,7 @@ public final class Core {
             }
 
         final Options options = (H.is_null_or_empty(conf) ?
-                new Options(url, method, content) : Options.read(conf)
+                new Options(url, method, data, header) : Options.read(conf)
         );
         if (null == options) {
             _l.error(String.format("<var:options> can't create Options%s",
@@ -104,7 +109,7 @@ public final class Core {
             @Override
             public FullHttpRequest setup(FullHttpRequest request) {
                 // setup ur customized http headers/contents processing
-                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
                 request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
 
                 request.headers().set(
@@ -118,18 +123,23 @@ public final class Core {
         final PipelineBuilder pipelined = new PipelineBuilder() {
             @Override
             public ChannelPipeline setup(ChannelPipeline pipeline) {
-                // setup ur customized http response/contents processing
-                pipeline.addLast(new HttpClientCodec());
-
-                // auto decompression
-                pipeline.addLast(new HttpContentDecompressor());
-
-                // default http response processing
-                pipeline.addLast(new DefaultResponseHandler());
+                // default http header processing
+                if (options.header()) {
+                    pipeline.addLast(new DefaultHeaderHandler());
+                }
 
                 // default http content processing
-                pipeline.addLast(new DefaultContentHandler());
-
+                if (options.body()) {
+                    pipeline.addLast(new DefaultContentHandler<Integer>() {
+                        @Override
+                        protected Integer process(String s) {
+                            _l.info(String.format("<BEGIN OF CONTENT:%s>", s.length()));
+                            _l.info(s);
+                            _l.info("<END OF CONTENT>");
+                            return (s.length());
+                        }
+                    });
+                }
                 return (pipeline);
             }
         };
@@ -140,7 +150,7 @@ public final class Core {
     private static void _http_post(final Options options) {
         _info(options);
 
-        final RequestBuilder requested = new RequestBuilder(options.url(), options.content()) {
+        final RequestBuilder requested = new RequestBuilder(options.url(), options.data()) {
             @Override
             public FullHttpRequest setup(FullHttpRequest request) {
                 // setup ur customized http headers/contents processing
@@ -160,18 +170,24 @@ public final class Core {
         final PipelineBuilder pipelined = new PipelineBuilder() {
             @Override
             public ChannelPipeline setup(ChannelPipeline pipeline) {
-                // setup ur customized http response/contents processing
-                pipeline.addLast(new HttpClientCodec());
-
-                // auto decompression
-                pipeline.addLast(new HttpContentDecompressor());
-
-                // default http response processing
-                pipeline.addLast(new DefaultResponseHandler());
+                // default http header processing
+                if (options.header()) {
+                    pipeline.addLast(new DefaultHeaderHandler());
+                }
 
                 // default http content processing
-                pipeline.addLast(new DefaultContentHandler());
+                if (options.body()) {
+                    pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
 
+                        @Override
+                        protected Integer process(String s) {
+                            _l.info(String.format("<BEGIN OF CONTENT:%s>", s.length()));
+                            _l.info(s);
+                            _l.info("<END OF CONTENT>");
+                            return (s.length());
+                        }
+                    });
+                }
                 return (pipeline);
             }
         };
@@ -196,8 +212,14 @@ public final class Core {
         if (null != m) {
             _l.info(m);
         }
-        _l.info(String.format("usage: %s [-h|--help] [-u|--url]", A.NAME));
+        _l.info(String.format("usage: %s %s", A.NAME,
+                "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header]"));
         _l.info("\t--url: specify the http url");
+        _l.info("\t--get: http get method");
+        _l.info("\t--post: http post method");
+        _l.info("\t--conf: specify the configuration file");
+        _l.info("\t--save: save configuration to the file");
+        _l.info("\t--header: 0:header-content; 1:header-only; 2:content-only");
         System.exit(0);
     }
 }
