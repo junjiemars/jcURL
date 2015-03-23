@@ -126,7 +126,12 @@ public final class Core {
             public ChannelPipeline setup(ChannelPipeline pipeline) {
                 // default http header processing
                 if (options.header()) {
-                    pipeline.addLast(new DefaultHeaderHandler());
+                    pipeline.addLast(new DefaultHeaderHandler<Integer>() {
+                        @Override
+                        protected Integer process(HttpResponse response) {
+                            return null;
+                        }
+                    });
                 }
 
                 // default http content processing
@@ -151,9 +156,6 @@ public final class Core {
     private static void _http_post(final Options options) {
         _info(options);
 
-        _l.info(H.pad_right("RESPONSE:", A.OPTION_PROMPT_LEN, "="));
-        _l.info(String.format("<Tid:%s>", H.tid()));
-
         final RequestBuilder requested = new RequestBuilder(options.url(), options.data()) {
             @Override
             public FullHttpRequest setup(FullHttpRequest request) {
@@ -177,7 +179,24 @@ public final class Core {
             public ChannelPipeline setup(ChannelPipeline pipeline) {
                 // default http header processing
                 if (options.header()) {
-                    pipeline.addLast(new DefaultHeaderHandler());
+                    pipeline.addLast(new DefaultHeaderHandler<Integer>() {
+                        @Override
+                        protected Integer process(HttpResponse response) {
+                            _l.info(H.pad_right(String.format("#R-HEADER<Tid:%s>", H.tid()),
+                                    A.OPTION_PROMPT_LEN, "="));
+                            _l.info(String.format("<STATUS>: %s", response.status()));
+                            _l.info(String.format("<VERSION>: %s", response.protocolVersion()));
+
+                            if (!response.headers().isEmpty()) {
+                                for (CharSequence name : response.headers().names()) {
+                                    for (CharSequence value : response.headers().getAll(name)) {
+                                        _l.info(String.format("<H>%s: %s", name, value));
+                                    }
+                                }
+                            }
+                            return null;
+                        }
+                    });
                 }
 
                 // default http content processing
@@ -186,9 +205,11 @@ public final class Core {
 
                         @Override
                         protected Integer process(String s) {
-                            _l.info(String.format("<BEGIN OF CONTENT:%s>", s.length()));
+                            _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d>", H.tid(), s.length()),
+                                    A.OPTION_PROMPT_LEN, "="));
                             _l.info(s);
-                            _l.info("<END OF CONTENT>");
+                            _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d>", H.tid(), s.length()),
+                                    A.OPTION_PROMPT_LEN, "="));
                             return (s.length());
                         }
                     });
@@ -198,22 +219,23 @@ public final class Core {
         };
 
         NClient.post(requested, pipelined);
+
     }
 
-
     private static void _info(Options options) {
-        _l.info(H.pad_right("PWD:", A.OPTION_PROMPT_LEN, "="));
+        _l.info(H.pad_right(String.format("PWD<Tid:%s>", H.tid()), A.OPTION_PROMPT_LEN, "="));
         _l.info(System.getProperty("user.dir"));
-        _l.info(H.pad_right("OPTIONS:", A.OPTION_PROMPT_LEN, "="));
+        _l.info(H.pad_right(String.format("OPTIONS<Tid:%s>", H.tid()), A.OPTION_PROMPT_LEN, "="));
         _l.info(options);
-        _l.info(H.pad_right(String.format("%s:", options.method()), A.OPTION_PROMPT_LEN, "="));
+        _l.info(H.pad_right(String.format("%s<Tid:%d>", options.method(), H.tid()),
+                A.OPTION_PROMPT_LEN, "="));
     }
 
     private static void _info_headers(final HttpHeaders h) {
         if (!h.isEmpty()) {
             for (CharSequence name : h.names()) {
                 for (CharSequence value : h.getAll(name)) {
-                    _l.info("HEADER: " + name + " = " + value);
+                    _l.info("<H>" + name + ": " + value);
                 }
             }
         }

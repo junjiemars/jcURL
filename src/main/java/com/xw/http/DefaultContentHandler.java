@@ -35,8 +35,6 @@ public abstract class DefaultContentHandler<T> extends SimpleChannelInboundHandl
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpContent content) {
-        _l.info(String.format("<Tid:%d|Len:%d>", H.tid(), content.content().capacity()));
-
         _content.append(content.content().toString(CharsetUtil.UTF_8));
 
         if (content instanceof LastHttpContent) {
