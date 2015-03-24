@@ -160,9 +160,12 @@ public final class Core {
             @Override
             public FullHttpRequest setup(FullHttpRequest request) {
                 // setup ur customized http headers/contents processing
-                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-//                request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
-                request.headers().set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML);
+                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+                        .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
+                        .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
+//                        .set(HttpHeaderNames.EXPECT, EXPECT_100)
+                ;
+
 
 //                request.headers().set(
 //                        HttpHeaderNames.COOKIE,
@@ -184,8 +187,8 @@ public final class Core {
                         protected Integer process(HttpResponse response) {
                             _l.info(H.pad_right(String.format("#R-HEADER<Tid:%s>", H.tid()),
                                     A.OPTION_PROMPT_LEN, "="));
-                            _l.info(String.format("<STATUS>: %s", response.status()));
-                            _l.info(String.format("<VERSION>: %s", response.protocolVersion()));
+                            _l.info(String.format("<status>: %s", response.status()));
+                            _l.info(String.format("<version>: %s", response.protocolVersion()));
 
                             if (!response.headers().isEmpty()) {
                                 for (CharSequence name : response.headers().names()) {
@@ -194,7 +197,7 @@ public final class Core {
                                     }
                                 }
                             }
-                            return null;
+                            return (response.headers().isEmpty() ? 0 : response.headers().names().size());
                         }
                     });
                 }

@@ -3,6 +3,8 @@ package com.xw.http;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpHeaderUtil;
+import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +39,9 @@ public abstract class DefaultContentHandler<T> extends SimpleChannelInboundHandl
     public void channelRead0(ChannelHandlerContext ctx, HttpContent content) {
         _content.append(content.content().toString(CharsetUtil.UTF_8));
 
+
         if (content instanceof LastHttpContent) {
+
             process(_content.toString());
             content.release();
             ctx.close();

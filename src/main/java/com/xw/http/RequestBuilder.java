@@ -29,7 +29,6 @@ public abstract class RequestBuilder {
                 ? null :
                 Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
                 //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
-
     }
 
     public final URI uri() {
@@ -55,8 +54,12 @@ public abstract class RequestBuilder {
                 _uri.getRawPath(),
                 _content);
 
-        request.headers().set(HttpHeaderNames.HOST, _uri.getHost());
-        request.headers().set(HttpHeaderNames.ACCEPT_CHARSET, CharsetUtil.UTF_8);
+        request.headers().set(HttpHeaderNames.HOST, _uri.getHost())
+                .set(HttpHeaderNames.ACCEPT_CHARSET, CharsetUtil.UTF_8)
+                .set(HttpHeaderNames.USER_AGENT, USER_AGENT)
+                .set(HttpHeaderNames.ACCEPT, ACCEPT_ALL)
+                .set(HttpHeaderNames.CONTENT_LENGTH, _content.readableBytes())
+                ;
 
         return (setup(request));
     }
@@ -79,7 +82,13 @@ public abstract class RequestBuilder {
 
     public abstract FullHttpRequest setup(final FullHttpRequest request);
 
-    public static final AsciiString TEXT_XML = new AsciiString("text/xml;charset=utf-8");
+    protected static final AsciiString TEXT_XML = new AsciiString("text/xml;charset=utf-8");
+
+    protected static final AsciiString USER_AGENT = new AsciiString(A.NAME);
+
+    protected static final AsciiString ACCEPT_ALL = new AsciiString("*/*");
+
+    protected static final AsciiString EXPECT_100 = new AsciiString("100-continue");
 
     private static URI _to_uri(final String url) {
         if (H.is_null_or_empty(url)) {

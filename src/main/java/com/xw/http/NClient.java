@@ -5,7 +5,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.FullHttpRequest;
 import org.apache.logging.log4j.LogManager;
@@ -51,8 +50,8 @@ public final class NClient {
     }
 
     private static boolean request(final URI uri,
-                                         final FullHttpRequest requested,
-                                         final PipelineBuilder pipelined) {
+                                   final FullHttpRequest requested,
+                                   final PipelineBuilder pipelined) {
         final EventLoopGroup group = new NioEventLoopGroup();
         try {
             final Bootstrap b = new Bootstrap();
@@ -62,7 +61,7 @@ public final class NClient {
                         @Override
                         protected void initChannel(NioSocketChannel ch) throws Exception {
                             if (pipelined != null) {
-                                pipelined.setup(pipelined.build(ch.pipeline()));
+                                pipelined.build(ch.pipeline());
                             }
                         }
                     });
