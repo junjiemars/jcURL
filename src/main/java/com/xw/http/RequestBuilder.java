@@ -1,6 +1,7 @@
 package com.xw.http;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.AsciiString;
 import io.netty.handler.codec.http.*;
@@ -21,12 +22,17 @@ public abstract class RequestBuilder {
         this(url, null);
     }
 
-    protected RequestBuilder(final String url, final String data) {
+//    protected RequestBuilder(final String url, final String data) {
+//        this(url, data, 0);
+//    }
+
+    protected RequestBuilder(final String url, final String data/*, final int timeout*/) {
         _uri = _to_uri(url);
         _buf = (H.is_null_or_empty(data)
                 ? null :
                 Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
-                //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
+        //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
+//        _timeout = new Integer(timeout);
     }
 
     public final URI uri() {
@@ -35,6 +41,7 @@ public abstract class RequestBuilder {
 
     private final URI _uri;
     private final ByteBuf _buf;
+//    private final Integer _timeout;
 
     public final FullHttpRequest build_post() {
         if (null == _uri) {

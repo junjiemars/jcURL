@@ -31,10 +31,11 @@ public final class Core {
                 new LongOpt("get", LongOpt.NO_ARGUMENT, null, 'g'),
                 new LongOpt("post", LongOpt.NO_ARGUMENT, null, 'p'),
                 new LongOpt("data", LongOpt.OPTIONAL_ARGUMENT, null, 'd'),
-                new LongOpt("header", LongOpt.OPTIONAL_ARGUMENT, null, 'H')
+                new LongOpt("header", LongOpt.OPTIONAL_ARGUMENT, null, 'H'),
+                new LongOpt("timeout", LongOpt.OPTIONAL_ARGUMENT, null, 't')
         };
 
-        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:;", opts);
+        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:t:;", opts);
         g.setOpterr(true);
         int c;
 
@@ -44,6 +45,7 @@ public final class Core {
         HttpMethod method = null;
         String data = null;
         int header = 0;
+        int timeout = 0;
 
         while ((c = g.getopt()) != -1)
             switch (c) {
@@ -68,6 +70,9 @@ public final class Core {
                 case 'H':
                     header = H.str_to_int(g.getOptarg(), 0);
                     break;
+                case 't':
+                    timeout = H.str_to_int(g.getOptarg(), 0);
+                    break;
                 case 'h':
                     _help();
                     break;
@@ -84,7 +89,7 @@ public final class Core {
             }
 
         final Options options = (H.is_null_or_empty(conf) ?
-                new Options(url, method, data, header) : Options.read(conf)
+                new Options(url, method, data, header, timeout) : Options.read(conf)
         );
         if (null == options) {
             _l.error(String.format("<var:options> can't create Options%s",
@@ -122,7 +127,7 @@ public final class Core {
                 return (request);
             }
         };
-        final PipelineBuilder pipelined = new PipelineBuilder() {
+        final PipelineBuilder pipelined = new PipelineBuilder(options.timeout()) {
             @Override
             public ChannelPipeline setup(ChannelPipeline pipeline) {
                 // default http header processing
@@ -176,7 +181,7 @@ public final class Core {
                 return (request);
             }
         };
-        final PipelineBuilder pipelined = new PipelineBuilder() {
+        final PipelineBuilder pipelined = new PipelineBuilder(options.timeout()) {
             @Override
             public ChannelPipeline setup(ChannelPipeline pipeline) {
                 if (options.header() /* show the response's headers? */) {
@@ -249,13 +254,14 @@ public final class Core {
             _l.info(m);
         }
         _l.info(String.format("usage: %s %s", A.NAME,
-                "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header]"));
+                "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header] [-t|--timeout]"));
         _l.info("\t--url: specify the http url");
         _l.info("\t--get: http get method");
         _l.info("\t--post: http post method");
         _l.info("\t--conf: specify the configuration file");
         _l.info("\t--save: save configuration to the file");
         _l.info("\t--header: 0:header-content; 1:header-only; 2:content-only");
+        _l.info("\t--timeout: default 0 milliseconds");
         System.exit(0);
     }
 }

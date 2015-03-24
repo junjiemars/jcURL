@@ -23,12 +23,14 @@ public final class Options {
     private HttpMethod _method;
     private String _data;
     private int _header; // 0:all; 1:header-only 2:content-only
+    private int _timeout;
 
-    public Options(final String url, final HttpMethod method, final String data, final int header) {
+    public Options(final String url, final HttpMethod method, final String data, final int header, final int timeout) {
         _url = url;
         _method = method;
         _header = header;
         _data = _rebuild_data(data);
+        _timeout = timeout;
     }
 
     public final String url() {
@@ -49,6 +51,10 @@ public final class Options {
 
     public final boolean body() {
         return (_header == 0 || 2 == (_header & 2));
+    }
+
+    public final int timeout() {
+        return (_timeout);
     }
 
     public static Options read(final String conf) {
