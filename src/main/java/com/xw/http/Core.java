@@ -4,7 +4,6 @@ import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -101,6 +100,8 @@ public final class Core {
         } else if (HttpMethod.POST.equals(options.method())) {
             _http_post(options);
         }
+
+        _l.info(H.pad_right("*", A.OPTION_PROMPT_LEN, "="));
     }
 
     private static void _http_get(final Options options) {
@@ -159,13 +160,11 @@ public final class Core {
         final RequestBuilder requested = new RequestBuilder(options.url(), options.data()) {
             @Override
             public FullHttpRequest setup(FullHttpRequest request) {
-                // setup ur customized http headers/contents processing
+                // customize the http headers
                 request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
                         .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
                         .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
-//                        .set(HttpHeaderNames.EXPECT, EXPECT_100)
                 ;
-
 
 //                request.headers().set(
 //                        HttpHeaderNames.COOKIE,
@@ -180,8 +179,7 @@ public final class Core {
         final PipelineBuilder pipelined = new PipelineBuilder() {
             @Override
             public ChannelPipeline setup(ChannelPipeline pipeline) {
-                // default http header processing
-                if (options.header()) {
+                if (options.header() /* show the response's headers? */) {
                     pipeline.addLast(new DefaultHeaderHandler<Integer>() {
                         @Override
                         protected Integer process(HttpResponse response) {
@@ -203,16 +201,15 @@ public final class Core {
                 }
 
                 // default http content processing
-                if (options.body()) {
+                if (options.body() /* show the response's body? */) {
                     pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
-
                         @Override
                         protected Integer process(String s) {
-                            _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d>", H.tid(), s.length()),
-                                    A.OPTION_PROMPT_LEN, "="));
+                            _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d>",
+                                            H.tid(), s.length()), A.OPTION_PROMPT_LEN, "="));
                             _l.info(s);
-                            _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d>", H.tid(), s.length()),
-                                    A.OPTION_PROMPT_LEN, "="));
+                            _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d>",
+                                            H.tid(), s.length()), A.OPTION_PROMPT_LEN, "="));
                             return (s.length());
                         }
                     });
@@ -222,7 +219,6 @@ public final class Core {
         };
 
         NClient.post(requested, pipelined);
-
     }
 
     private static void _info(Options options) {

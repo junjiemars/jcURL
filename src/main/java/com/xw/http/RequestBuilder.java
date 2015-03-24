@@ -1,7 +1,6 @@
 package com.xw.http;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.AsciiString;
 import io.netty.handler.codec.http.*;
@@ -11,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 
 
 /**
@@ -25,7 +23,7 @@ public abstract class RequestBuilder {
 
     protected RequestBuilder(final String url, final String data) {
         _uri = _to_uri(url);
-        _content = (H.is_null_or_empty(data)
+        _buf = (H.is_null_or_empty(data)
                 ? null :
                 Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
                 //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
@@ -36,15 +34,15 @@ public abstract class RequestBuilder {
     }
 
     private final URI _uri;
-    private final ByteBuf _content;
+    private final ByteBuf _buf;
 
     public final FullHttpRequest build_post() {
         if (null == _uri) {
             _l.error("<var:_uri> is invalid");
             return (null);
         }
-        if (null == _content) {
-            _l.error("<var:_content> is invalid");
+        if (null == _buf) {
+            _l.error("<var:_buf> is invalid");
             return (null);
         }
 
@@ -52,13 +50,13 @@ public abstract class RequestBuilder {
                 HttpVersion.HTTP_1_1,
                 HttpMethod.POST,
                 _uri.getRawPath(),
-                _content);
+                _buf);
 
         request.headers().set(HttpHeaderNames.HOST, _uri.getHost())
                 .set(HttpHeaderNames.ACCEPT_CHARSET, CharsetUtil.UTF_8)
                 .set(HttpHeaderNames.USER_AGENT, USER_AGENT)
                 .set(HttpHeaderNames.ACCEPT, ACCEPT_ALL)
-                .set(HttpHeaderNames.CONTENT_LENGTH, _content.readableBytes())
+                .set(HttpHeaderNames.CONTENT_LENGTH, _buf.readableBytes())
                 ;
 
         return (setup(request));
@@ -80,7 +78,7 @@ public abstract class RequestBuilder {
         return (setup(request));
     }
 
-    public abstract FullHttpRequest setup(final FullHttpRequest request);
+    protected abstract FullHttpRequest setup(final FullHttpRequest request);
 
     protected static final AsciiString TEXT_XML = new AsciiString("text/xml;charset=utf-8");
 
@@ -88,7 +86,7 @@ public abstract class RequestBuilder {
 
     protected static final AsciiString ACCEPT_ALL = new AsciiString("*/*");
 
-    protected static final AsciiString EXPECT_100 = new AsciiString("100-continue");
+//    protected static final AsciiString EXPECT_100 = new AsciiString("100-continue");
 
     private static URI _to_uri(final String url) {
         if (H.is_null_or_empty(url)) {

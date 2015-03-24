@@ -14,14 +14,12 @@ public abstract class PipelineBuilder {
     }
 
     public final ChannelPipeline build(final ChannelPipeline pipeline) {
-        // setup ur customized http response/contents processing
         pipeline.addLast(new HttpClientCodec());
 
-        // auto decompression
         pipeline.addLast(new HttpContentDecompressor());
 
         return (setup(pipeline));
     }
 
-    public abstract ChannelPipeline setup(final ChannelPipeline pipeline);
+    protected abstract ChannelPipeline setup(final ChannelPipeline pipeline);
 }

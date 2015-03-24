@@ -3,8 +3,6 @@ package com.xw.http;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpHeaderUtil;
-import io.netty.handler.codec.http.HttpMessage;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
@@ -16,12 +14,13 @@ import org.apache.logging.log4j.Logger;
  * Target: <>
  */
 public abstract class DefaultContentHandler<T> extends SimpleChannelInboundHandler<HttpContent> {
+
     protected DefaultContentHandler() {
         this(512);
     }
 
     protected DefaultContentHandler(int capacity) {
-        _content = new StringBuilder(capacity);
+        _buf = new StringBuilder(capacity);
     }
 
 //    @Override
@@ -37,12 +36,10 @@ public abstract class DefaultContentHandler<T> extends SimpleChannelInboundHandl
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpContent content) {
-        _content.append(content.content().toString(CharsetUtil.UTF_8));
-
+        _buf.append(content.content().toString(CharsetUtil.UTF_8));
 
         if (content instanceof LastHttpContent) {
-
-            process(_content.toString());
+            process(_buf.toString());
             content.release();
             ctx.close();
         }
@@ -50,7 +47,7 @@ public abstract class DefaultContentHandler<T> extends SimpleChannelInboundHandl
 
     protected abstract T process(final String s);
 
-    private final StringBuilder _content;
+    private final StringBuilder _buf;
 
     private static final Logger _l = LogManager.getLogger(DefaultContentHandler.class);
 

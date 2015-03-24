@@ -36,7 +36,8 @@ public final class NClient {
         return (request(requested.uri(), p, pipelined));
     }
 
-    private static boolean _check_args(final RequestBuilder requested, final PipelineBuilder pipelined) {
+    private static boolean _check_args(final RequestBuilder requested,
+                                       final PipelineBuilder pipelined) {
         if (null == requested) {
             _l.error("<arg:requested> is invalid");
             return (false);
