@@ -30,9 +30,10 @@ public abstract class RequestBuilder {
         _uri = _to_uri(url);
         _buf = (H.is_null_or_empty(data)
                 ? null :
-                Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
+//                Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
         //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
 //        _timeout = new Integer(timeout);
+        PooledByteBufAllocator.DEFAULT.buffer().alloc().buffer(512).writeBytes(data.getBytes(CharsetUtil.UTF_8)));
     }
 
     public final URI uri() {
@@ -65,6 +66,8 @@ public abstract class RequestBuilder {
                 .set(HttpHeaderNames.ACCEPT, ACCEPT_ALL)
                 .set(HttpHeaderNames.CONTENT_LENGTH, _buf.readableBytes())
                 ;
+
+
 
         return (setup(request));
     }

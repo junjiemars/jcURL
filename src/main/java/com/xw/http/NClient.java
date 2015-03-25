@@ -1,9 +1,8 @@
 package com.xw.http;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.EventLoopGroup;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -55,29 +54,27 @@ public final class NClient {
                                    final PipelineBuilder pipelined) {
         final EventLoopGroup group = new NioEventLoopGroup();
         try {
-            final Bootstrap b = new Bootstrap();
-            b.group(group)
+            final Bootstrap b = new Bootstrap()
+                    .remoteAddress(uri.getHost(), (-1 == uri.getPort() ? 80 : uri.getPort()))
+                    .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+                    .group(group)
                     .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
                         protected void initChannel(NioSocketChannel ch) throws Exception {
-                            if (pipelined != null) {
-                                pipelined.build(ch.pipeline());
-                            }
+                            pipelined.build(ch.pipeline());
                         }
                     });
 
-            final Channel c = b.connect(uri.getHost(),
-                    (-1 == uri.getPort() ? 80 : uri.getPort()))
-                    .sync().channel();
+            final Channel c = b.connect().syncUninterruptibly().channel();
+            c.writeAndFlush(requested, c.voidPromise());
+            c.closeFuture().syncUninterruptibly();
 
-            c.writeAndFlush(requested);
-            c.closeFuture().sync();
             return (true);
         } catch (final Exception e) {
             _l.error(e);
         } finally {
-            group.shutdownGracefully();
+            group.shutdownGracefully().syncUninterruptibly();
         }
 
         return (false);

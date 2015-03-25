@@ -77,6 +77,10 @@ public final class Options {
     }
 
     private static String _rebuild_data(final String data) {
+        if (H.is_null_or_empty(data)) {
+            return (data);
+        }
+
         final Matcher m = _data_pattern.matcher(data);
         if (m.find()) {
             _l.info(m.group(1));
