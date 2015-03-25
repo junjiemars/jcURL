@@ -3,6 +3,8 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Author: junjie
@@ -15,6 +17,10 @@ public class Foo {
         final String data = "Hello";
         final int timeout = 500;
 
+        callA("http://cn.bing.com", "Hello", 500);
+    }
+
+    private static void callA(final String url, final String data, final int timeout) {
         NClient.post(new RequestBuilder(url, data) {
                          @Override
                          public FullHttpRequest setup(FullHttpRequest request) {
@@ -28,13 +34,18 @@ public class Foo {
                      },
                 new PipelineBuilder(timeout) {
                     @Override
-                    public ChannelPipeline setup(ChannelPipeline pipeline) {
+                    public ChannelPipeline setup(final ChannelPipeline pipeline) {
                         // default http content processing
 
                         pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
                             protected Integer process(String s) {
-                                System.out.println(s);
+                                _l.info(H.pad_right(String.format("##<callB|Tid:%d>",
+                                        H.tid()), A.OPTION_PROMPT_LEN, "#"));
+                                _l.info(s);
+
+                                // conditioning
+                                callB("http://www.baidu.com", "Welcome", 500);
                                 return (s.length());
                             }
                         });
@@ -42,4 +53,36 @@ public class Foo {
                     }
                 });
     }
+
+    private static final void callB(final String url, final String data, final int timeout) {
+        NClient.post(new RequestBuilder(url, data) {
+                         @Override
+                         public FullHttpRequest setup(FullHttpRequest request) {
+                             // customize the http headers
+                             request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+                                     .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
+                                     .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
+                             ;
+                             return (request);
+                         }
+                     },
+                new PipelineBuilder(timeout) {
+                    @Override
+                    public ChannelPipeline setup(final ChannelPipeline pipeline) {
+                        // default http content processing
+                        pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
+                            @Override
+                            protected Integer process(String s) {
+                                _l.info(H.pad_right(String.format("##<callB|Tid:%d>",
+                                        H.tid()), A.OPTION_PROMPT_LEN, "#"));
+                                _l.info(s);
+                                return (s.length());
+                            }
+                        });
+                        return (pipeline);
+                    }
+                });
+    }
+
+    private static final Logger _l = LogManager.getLogger(Foo.class);
 }
