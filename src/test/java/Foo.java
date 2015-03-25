@@ -45,7 +45,7 @@ public class Foo {
                                 _l.info(s);
 
                                 // conditioning
-                                callB("http://www.baidu.com", "Welcome", 500);
+                                callB(s.length(), "http://www.baidu.com", "Welcome", 500);
                                 return (s.length());
                             }
                         });
@@ -54,7 +54,7 @@ public class Foo {
                 });
     }
 
-    private static final void callB(final String url, final String data, final int timeout) {
+    private static final void callB(final int aLen, final String url, final String data, final int timeout) {
         NClient.post(new RequestBuilder(url, data) {
                          @Override
                          public FullHttpRequest setup(FullHttpRequest request) {
@@ -76,6 +76,7 @@ public class Foo {
                                 _l.info(H.pad_right(String.format("##<callB|Tid:%d>",
                                         H.tid()), A.OPTION_PROMPT_LEN, "#"));
                                 _l.info(s);
+                                _l.info(String.format("<A:%d+B:%d=%d>", aLen, s.length(), aLen+s.length()));
                                 return (s.length());
                             }
                         });
