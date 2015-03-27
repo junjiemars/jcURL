@@ -34,12 +34,13 @@ task uberjar(type: Jar, dependsOn:jar/*,dependsOn:[':compileJava',':compileGroov
     manifest {
         attributes(
                 'Create-By': System.getProperty('java.version'),
-                'Main-Class': 'com.xw.http.Core',
+                'Main-Class': "${System.getProperty('entry.class') ?: 'com.xw.http.Core'}",
                 'Build-Version': version,
                 'Build-Date': new Date()
         )
     }
 }
+
 
 task where << {
 	configurations.compile.each { println it }

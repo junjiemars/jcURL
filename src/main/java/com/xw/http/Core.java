@@ -35,7 +35,7 @@ public final class Core {
                 new LongOpt("timeout", LongOpt.OPTIONAL_ARGUMENT, null, 't')
         };
 
-        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:t:;", opts);
+        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:t:¡;", opts);
         g.setOpterr(true);
         int c;
 
@@ -161,6 +161,7 @@ public final class Core {
 
     private static void _http_post(final Options options) {
         _info(options);
+        final Long begin = System.currentTimeMillis();
 
         final RequestBuilder requested = new RequestBuilder(options.url(), options.data()) {
             @Override
@@ -215,6 +216,8 @@ public final class Core {
                             _l.info(s);
                             _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d>",
                                             H.tid(), s.length()), A.OPTION_PROMPT_LEN, "="));
+
+                            _l.info(String.format("elapsed:%d", System.currentTimeMillis()-begin));
                             return (s.length());
                         }
                     });

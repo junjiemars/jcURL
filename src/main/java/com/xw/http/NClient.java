@@ -66,15 +66,15 @@ public final class NClient {
                         }
                     });
 
-            final Channel c = b.connect().syncUninterruptibly().channel();
+            final Channel c = b.connect().sync().channel();
             c.writeAndFlush(requested, c.voidPromise());
-            c.closeFuture().syncUninterruptibly();
+            c.closeFuture().sync();
 
             return (true);
         } catch (final Exception e) {
             _l.error(e);
         } finally {
-            group.shutdownGracefully().syncUninterruptibly();
+            group.shutdownGracefully();
         }
 
         return (false);

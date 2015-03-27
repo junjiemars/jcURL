@@ -5,14 +5,16 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.Test;
 
 /**
  * Author: junjie
  * Date: 3/25/15.
  * Target: <>
  */
-public class Foo {
-    public static void main(String[] args) {
+public class CallingChainTest {
+    @Test
+    public void calling() {
         final String url = "http://cn.bing.com";
         final String data = "Hello";
         final int timeout = 500;
@@ -54,7 +56,7 @@ public class Foo {
                 });
     }
 
-    private static final void callB(final int aLen, final String url, final String data, final int timeout) {
+    private static void callB(final int aLen, final String url, final String data, final int timeout) {
         NClient.post(new RequestBuilder(url, data) {
                          @Override
                          public FullHttpRequest setup(FullHttpRequest request) {
@@ -85,5 +87,5 @@ public class Foo {
                 });
     }
 
-    private static final Logger _l = LogManager.getLogger(Foo.class);
+    private static final Logger _l = LogManager.getLogger(CallingChainTest.class);
 }

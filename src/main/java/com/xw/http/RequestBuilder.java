@@ -33,7 +33,7 @@ public abstract class RequestBuilder {
 //                Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
         //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
 //        _timeout = new Integer(timeout);
-        PooledByteBufAllocator.DEFAULT.buffer().alloc().buffer(512).writeBytes(data.getBytes(CharsetUtil.UTF_8)));
+        PooledByteBufAllocator.DEFAULT.heapBuffer().alloc().buffer(512).writeBytes(data.getBytes(CharsetUtil.UTF_8)));
     }
 
     public final URI uri() {
