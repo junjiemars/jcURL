@@ -3,6 +3,7 @@ package com.xw.http;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -69,6 +70,7 @@ public final class NClient {
             final Channel c = b.connect().sync().channel();
             c.writeAndFlush(requested, c.voidPromise());
             c.closeFuture().sync();
+            requested.release();
 
             return (true);
         } catch (final Exception e) {

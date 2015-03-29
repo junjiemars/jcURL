@@ -40,7 +40,6 @@ public abstract class DefaultContentHandler<T> extends SimpleChannelInboundHandl
 
         if (content instanceof LastHttpContent) {
             process(_buf.toString());
-            content.content().release();
             content.release();
             ctx.close();
         }

@@ -33,7 +33,8 @@ public abstract class RequestBuilder {
 //                Unpooled.copiedBuffer(data.getBytes(CharsetUtil.UTF_8)));
         //PooledByteBufAllocator.DEFAULT.directBuffer(8192).setBytes(0, data.getBytes(CharsetUtil.UTF_8)));
 //        _timeout = new Integer(timeout);
-        PooledByteBufAllocator.DEFAULT.heapBuffer().alloc().buffer(512).writeBytes(data.getBytes(CharsetUtil.UTF_8)));
+        //PooledByteBufAllocator.DEFAULT.heapBuffer().alloc().buffer(512).writeBytes(data.getBytes(CharsetUtil.UTF_8)));
+        data);
     }
 
     public final URI uri() {
@@ -41,7 +42,8 @@ public abstract class RequestBuilder {
     }
 
     private final URI _uri;
-    private final ByteBuf _buf;
+//    private final ByteBuf _buf;
+    private final String _buf;
 //    private final Integer _timeout;
 
     public final FullHttpRequest build_post() {
@@ -54,17 +56,18 @@ public abstract class RequestBuilder {
             return (null);
         }
 
+        final ByteBuf b = _to_buf(_buf);
         final FullHttpRequest request = new DefaultFullHttpRequest(
                 HttpVersion.HTTP_1_1,
                 HttpMethod.POST,
                 _uri.getRawPath(),
-                _buf);
+                b.duplicate());
 
         request.headers().set(HttpHeaderNames.HOST, _uri.getHost())
                 .set(HttpHeaderNames.ACCEPT_CHARSET, CharsetUtil.UTF_8)
                 .set(HttpHeaderNames.USER_AGENT, USER_AGENT)
                 .set(HttpHeaderNames.ACCEPT, ACCEPT_ALL)
-                .set(HttpHeaderNames.CONTENT_LENGTH, _buf.readableBytes())
+                .set(HttpHeaderNames.CONTENT_LENGTH, b.readableBytes())
                 ;
 
 
@@ -111,6 +114,10 @@ public abstract class RequestBuilder {
         }
 
         return (null);
+    }
+
+    private static ByteBuf _to_buf(final String data) {
+        return (PooledByteBufAllocator.DEFAULT.heapBuffer().alloc().buffer(512).writeBytes(data.getBytes(CharsetUtil.UTF_8)));
     }
 
     private static final Logger _l = LogManager.getLogger(RequestBuilder.class);
