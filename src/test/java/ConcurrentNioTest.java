@@ -18,15 +18,16 @@ import org.junit.Test;
  * Create:27/3/15.
  * Target:<>
  */
-public class ConcurrentNIOTest {
+public class ConcurrentNioTest {
 
     // gradle -Dtest.single=Concurrent test
     @Test
     public void concurrent() {
-        final int size = 500;
+        final int size = H.str_to_int(System.getProperty("test.size"), 1);
+        final String url = System.getProperty("test.url");
+        final String data = System.getProperty("test.data");
+
         final ExecutorService e = Executors.newFixedThreadPool(size);
-        final String url = "http://cn.bing.com";
-        final String data = "Hello";
         final Set<Callable<Integer>> tasks = new HashSet<Callable<Integer>>();
 
         for (int i = 0; i < size; i++) {
@@ -34,7 +35,7 @@ public class ConcurrentNIOTest {
                 @Override
                 public Integer call() throws Exception {
                     _l.info(H.pad_right(String.format("##<call:%d>", H.tid()), A.OPTION_PROMPT_LEN, "="));
-                    return ConcurrentNIOTest.call(url, data);
+                    return ConcurrentNioTest.call(url, data);
                 }
             });
         }
@@ -80,6 +81,6 @@ public class ConcurrentNIOTest {
 
         return 1;
     }
-    private static final Logger _l = LogManager.getLogger(ConcurrentNIOTest.class);
+    private static final Logger _l = LogManager.getLogger(ConcurrentNioTest.class);
     private static AtomicInteger _ai = new AtomicInteger(0);
 }

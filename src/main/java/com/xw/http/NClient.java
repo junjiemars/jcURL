@@ -6,7 +6,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoop;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,15 +26,13 @@ public final class NClient {
     public static boolean post(final RequestBuilder requested, final PipelineBuilder pipelined) {
         if (!_check_args(requested, pipelined)) return (false);
 
-        final FullHttpRequest r = requested.build_post();
-        return (request(requested.uri(), r, pipelined));
+        return (request(requested.uri(), requested.build_post(), pipelined));
     }
 
     public static boolean get(final RequestBuilder requested, final PipelineBuilder pipelined) {
         if (!_check_args(requested, pipelined)) return (false);
 
-        final FullHttpRequest p = requested.build_get();
-        return (request(requested.uri(), p, pipelined));
+        return (request(requested.uri(), requested.build_get(), pipelined));
     }
 
     private static boolean _check_args(final RequestBuilder requested,
@@ -68,9 +67,8 @@ public final class NClient {
                     });
 
             final Channel c = b.connect().sync().channel();
-            c.writeAndFlush(requested, c.voidPromise());
+            c.writeAndFlush(requested);
             c.closeFuture().sync();
-            requested.release();
 
             return (true);
         } catch (final Exception e) {
