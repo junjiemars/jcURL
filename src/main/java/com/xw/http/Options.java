@@ -24,13 +24,15 @@ public final class Options {
     private String _data;
     private int _header; // 0:all; 1:header-only 2:content-only
     private int _timeout;
+    private int _concurrent;
 
-    public Options(final String url, final HttpMethod method, final String data, final int header, final int timeout) {
+    public Options(final String url, final HttpMethod method, final String data, final int header, final int timeout, final int concurrent) {
         _url = url;
         _method = method;
         _header = header;
         _data = _rebuild_data(data);
         _timeout = timeout;
+        _concurrent = concurrent;
     }
 
     public final String url() {
@@ -55,6 +57,10 @@ public final class Options {
 
     public final int timeout() {
         return (_timeout);
+    }
+
+    public final int concurrent() {
+        return (_concurrent);
     }
 
     public static Options read(final String conf) {

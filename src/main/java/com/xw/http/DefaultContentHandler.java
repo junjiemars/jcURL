@@ -8,6 +8,8 @@ import io.netty.util.CharsetUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.concurrent.Executor;
+
 /**
  * Author: junjie
  * Date: 3/5/2015.

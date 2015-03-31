@@ -7,6 +7,14 @@ import io.netty.handler.codec.http.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.nio.channels.Pipe;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Author: junjie
  * Date: 3/12/15.
@@ -32,10 +40,11 @@ public final class Core {
                 new LongOpt("post", LongOpt.NO_ARGUMENT, null, 'p'),
                 new LongOpt("data", LongOpt.OPTIONAL_ARGUMENT, null, 'd'),
                 new LongOpt("header", LongOpt.OPTIONAL_ARGUMENT, null, 'H'),
-                new LongOpt("timeout", LongOpt.OPTIONAL_ARGUMENT, null, 't')
+                new LongOpt("timeout", LongOpt.OPTIONAL_ARGUMENT, null, 't'),
+                new LongOpt("concurrent", LongOpt.OPTIONAL_ARGUMENT, null, 'm')
         };
 
-        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:t:¡;", opts);
+        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:t:m:;", opts);
         g.setOpterr(true);
         int c;
 
@@ -46,6 +55,7 @@ public final class Core {
         String data = null;
         int header = 0;
         int timeout = 0;
+        int concurrent = 0;
 
         while ((c = g.getopt()) != -1)
             switch (c) {
@@ -73,6 +83,9 @@ public final class Core {
                 case 't':
                     timeout = H.str_to_int(g.getOptarg(), 0);
                     break;
+                case 'm':
+                    concurrent = H.str_to_int(g.getOptarg(), 0);
+                    break;
                 case 'h':
                     _help();
                     break;
@@ -88,8 +101,8 @@ public final class Core {
                     break;
             }
 
-        final Options options = (H.is_null_or_empty(conf) ?
-                new Options(url, method, data, header, timeout) : Options.read(conf)
+        final Options options = (H.is_null_or_empty(conf)
+                ? new Options(url, method, data, header, timeout, concurrent) : Options.read(conf)
         );
         if (null == options) {
             _l.error(String.format("<var:options> can't create Options%s",
@@ -100,16 +113,37 @@ public final class Core {
             Options.save(options, save);
         }
 
-        if (HttpMethod.GET.equals(options.method())) {
-            _http_get(options);
-        } else if (HttpMethod.POST.equals(options.method())) {
-            _http_post(options);
+
+        if (options.concurrent() <= 0) {
+            final Tuple<RequestBuilder, PipelineBuilder, Boolean> tuple = HttpMethod.POST.equals(options.method())
+                    ? _http_post(options) : _http_get(options);
+            tuple.call();
+        } else {
+            final ExecutorService e = Executors.newFixedThreadPool(options.concurrent());
+            Set<Callable<Boolean>> invokes = new HashSet<Callable<Boolean>>(options.concurrent());
+            for (int i = 0; i < options.concurrent(); i++) {
+                invokes.add(new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        return ((HttpMethod.POST.equals(options.method())
+                                ? _http_post(options) : _http_get(options)).call());
+                    }
+                });
+            }
+
+            try {
+                e.invokeAll(invokes);
+            } catch (final InterruptedException ex) {
+                _l.error(ex);
+            } finally {
+                e.shutdown();
+            }
         }
 
         _l.info(H.pad_right("*", A.OPTION_PROMPT_LEN, "="));
     }
 
-    private static void _http_get(final Options options) {
+    private static Tuple<RequestBuilder, PipelineBuilder, Boolean> _http_get(final Options options) {
         _info(options);
 
         final RequestBuilder requested = new RequestBuilder(options.url()) {
@@ -156,10 +190,15 @@ public final class Core {
             }
         };
 
-        NClient.get(requested, pipelined);
+        return (new Tuple<RequestBuilder, PipelineBuilder, Boolean>(requested, pipelined) {
+            @Override
+            public Boolean call() {
+                return (NClient.get(x(), y()));
+            }
+        });
     }
 
-    private static void _http_post(final Options options) {
+    private static Tuple<RequestBuilder, PipelineBuilder, Boolean> _http_post(final Options options) {
         _info(options);
         final Long begin = System.currentTimeMillis();
 
@@ -211,11 +250,13 @@ public final class Core {
                     pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
                         @Override
                         protected Integer process(String s) {
-                            _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d>",
-                                            H.tid(), s.length()), A.OPTION_PROMPT_LEN, "="));
+                            _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d|#%d>",
+                                            H.tid(), s.length(), _sn.getAndIncrement()),
+                                    A.OPTION_PROMPT_LEN, "="));
                             _l.info(s);
-                            _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d>",
-                                            H.tid(), s.length()), A.OPTION_PROMPT_LEN, "="));
+                            _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d|#%d>",
+                                            H.tid(), s.length(), _sn.get()),
+                                    A.OPTION_PROMPT_LEN, "="));
 
                             _l.info(String.format("elapsed:%d", System.currentTimeMillis()-begin));
                             return (s.length());
@@ -226,7 +267,13 @@ public final class Core {
             }
         };
 
-        NClient.post(requested, pipelined);
+
+        return (new Tuple<RequestBuilder, PipelineBuilder, Boolean>(requested, pipelined) {
+            @Override
+            public Boolean call() {
+                return (NClient.post(x(), y()));
+            }
+        });
     }
 
     private static void _info(Options options) {
@@ -257,7 +304,7 @@ public final class Core {
             _l.info(m);
         }
         _l.info(String.format("usage: %s %s", A.NAME,
-                "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header] [-t|--timeout]"));
+                "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header] [-t|--timeout] [-m|--concurrent]"));
         _l.info("\t--url: specify the http url");
         _l.info("\t--get: http get method");
         _l.info("\t--post: http post method");
@@ -265,6 +312,9 @@ public final class Core {
         _l.info("\t--save: save configuration to the file");
         _l.info("\t--header: 0:header-content; 1:header-only; 2:content-only");
         _l.info("\t--timeout: default 0 milliseconds");
+        _l.info("\t--concurrent: concurrently run");
         System.exit(0);
     }
+
+    private static final AtomicInteger _sn = new AtomicInteger(0);
 }

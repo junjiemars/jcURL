@@ -55,7 +55,7 @@ public abstract class RequestBuilder {
                 HttpVersion.HTTP_1_1,
                 HttpMethod.POST,
                 _uri.getRawPath(),
-                ReferenceCountUtil.releaseLater(_buf.duplicate()));
+                _buf.duplicate());
 
         request.headers().set(HttpHeaderNames.HOST, _uri.getHost())
                 .set(HttpHeaderNames.ACCEPT_CHARSET, CharsetUtil.UTF_8)
@@ -110,7 +110,9 @@ public abstract class RequestBuilder {
 
     private static ByteBuf _to_buf(final String data) {
         return (PooledByteBufAllocator.DEFAULT
-                .heapBuffer().alloc()
+                .heapBuffer()
+//                .directBuffer()
+                .alloc()
                 .buffer(512)
                 .writeBytes(data.getBytes(CharsetUtil.UTF_8)));
     }
