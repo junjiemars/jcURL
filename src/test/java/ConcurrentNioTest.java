@@ -20,7 +20,7 @@ import org.junit.Test;
  */
 public class ConcurrentNioTest {
 
-    // gradle -Dtest.single=Concurrent test
+    // gradle -Dtest.single=ConcurrentNio test
     @Test
     public void concurrent() {
         final int size = H.str_to_int(System.getProperty("test.size"), 1);

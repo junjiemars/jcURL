@@ -4,6 +4,7 @@ import io.netty.util.CharsetUtil;
 import org.junit.Test;
 
 import java.nio.charset.Charset;
+import java.util.Random;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -52,12 +53,40 @@ public class ByteBufLifecycleTest {
 
         ByteBuf copied = sliced.copy();
         assertEquals(1, copied.refCnt());
-        boolean destroyed = copied.release();
+        copied.release();
         assertEquals(0, copied.refCnt());
 
         assertEquals(2, sliced.refCnt());
+    }
 
+    @Test
+    public void index() {
+        ByteBuf buf = PooledByteBufAllocator.DEFAULT
+                .heapBuffer()
+                .alloc().buffer(16);
+        assertEquals(0, buf.writerIndex());
+        assertEquals(0, buf.readerIndex());
 
+        buf.writeBytes("abc".getBytes(CharsetUtil.UTF_8));
+        assertEquals(0, buf.readerIndex());
+        assertEquals("abc".getBytes(CharsetUtil.UTF_8).length, buf.writerIndex());
+
+        System.out.println(buf.getByte(0));
+        assertEquals(0, buf.readerIndex());
+
+        final Random random = new Random();
+        while (buf.writableBytes() > 0) {
+            buf.writeByte((char)(random.nextInt('z' - 'd') + 'd'));
+        }
+
+        assertEquals(buf.capacity(), buf.writerIndex());
+        int capacity = buf.capacity();
+        buf.writeByte('z');
+        assertEquals(4*capacity, buf.capacity());
+
+        buf.clear();
+        assertEquals(0, buf.readerIndex());
+        assertEquals(0, buf.writerIndex());
     }
 
     private ByteBuf who_a(ByteBuf in) {
