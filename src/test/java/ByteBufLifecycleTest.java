@@ -3,11 +3,11 @@ import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.util.CharsetUtil;
 import org.junit.Test;
 
-import java.nio.charset.Charset;
 import java.util.Random;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * Author:junjie
@@ -76,13 +76,13 @@ public class ByteBufLifecycleTest {
 
         final Random random = new Random();
         while (buf.writableBytes() > 0) {
-            buf.writeByte((char)(random.nextInt('z' - 'd') + 'd'));
+            buf.writeByte((char) (random.nextInt('z' - 'd') + 'd'));
         }
 
         assertEquals(buf.capacity(), buf.writerIndex());
         int capacity = buf.capacity();
         buf.writeByte('z');
-        assertEquals(4*capacity, buf.capacity());
+        assertEquals(4 * capacity, buf.capacity());
 
         buf.clear();
         assertEquals(0, buf.readerIndex());

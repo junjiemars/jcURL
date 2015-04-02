@@ -41,6 +41,11 @@ task uberjar(type: Jar, dependsOn:jar/*,dependsOn:[':compileJava',':compileGroov
     }
 }
 
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
+    }
+}
 
 task where << {
 	configurations.compile.each { println it }

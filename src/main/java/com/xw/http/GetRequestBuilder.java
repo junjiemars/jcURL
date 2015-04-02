@@ -11,7 +11,7 @@ import io.netty.handler.codec.http.HttpVersion;
  */
 public abstract class GetRequestBuilder
         extends DefaultFullHttpRequest
-        implements RequestBuilder0<GetRequestBuilder> {
+        implements RequestBuilder<GetRequestBuilder> {
 
     public GetRequestBuilder(final String url) {
         this(HttpVersion.HTTP_1_1, HttpMethod.GET, url, true);

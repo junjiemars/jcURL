@@ -15,7 +15,7 @@ import io.netty.util.CharsetUtil;
  */
 public abstract class PostRequestBuilder
         extends DefaultFullHttpRequest
-        implements RequestBuilder0<PostRequestBuilder> {
+        implements RequestBuilder<PostRequestBuilder> {
 
     public PostRequestBuilder(final String uri, final String content) {
         this(HttpVersion.HTTP_1_1, HttpMethod.POST,

@@ -31,7 +31,7 @@ public abstract class DefaultContentHandler<T>
 
     protected DefaultContentHandler(int capacity) {
         _content = PooledByteBufAllocator.DEFAULT
-                .heapBuffer(capacity); // faster allocate
+                .heapBuffer(capacity); // faster allocate and access
     }
 
     @Override

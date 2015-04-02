@@ -15,24 +15,17 @@ import org.junit.Test;
 public class CallingChainTest {
     @Test
     public void calling() {
-        final String url = "http://cn.bing.com";
-        final String data = "Hello";
-        final int timeout = 500;
-
         callA("http://cn.bing.com", "Hello", 500);
     }
 
     private static void callA(final String url, final String data, final int timeout) {
-        NClient.post(new RequestBuilder(url, data) {
-                         @Override
-                         public FullHttpRequest setup(FullHttpRequest request) {
-                             // customize the http headers
-                             request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
-                                     .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
-                                     .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
-                             ;
-                             return (request);
-                         }
+        NClient.request(new PostRequestBuilder(url, data) {
+                            @Override
+                            public void setup(final PostRequestBuilder builder) {
+                                builder.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+                                        .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
+                                        .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML);
+                            }
                      },
                 new PipelineBuilder(timeout) {
                     @Override
@@ -56,17 +49,15 @@ public class CallingChainTest {
     }
 
     private static void callB(final int aLen, final String url, final String data, final int timeout) {
-        NClient.post(new RequestBuilder(url, data) {
-                         @Override
-                         public FullHttpRequest setup(FullHttpRequest request) {
-                             // customize the http headers
-                             request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
-                                     .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
-                                     .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
-                             ;
-                             return (request);
-                         }
-                     },
+        NClient.request(new PostRequestBuilder(url, data) {
+                            @Override
+                            public void setup(final PostRequestBuilder builder) {
+                                // customize the http headers
+                                builder.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+                                        .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
+                                        .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML);
+                            }
+                        },
                 new PipelineBuilder(timeout) {
                     @Override
                     public void setup(final ChannelPipeline pipeline) {
