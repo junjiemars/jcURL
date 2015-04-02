@@ -50,20 +50,29 @@ public class ConcurrentNioTest {
     }
 
     private static Integer call(String url, String data) {
-        NClient.post(
-                new RequestBuilder(url, data) {
+        NClient.request(
+//                new RequestBuilder(url, data) {
+//                    @Override
+//                    protected FullHttpRequest setup(FullHttpRequest request) {
+//                        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+//                                .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
+//                                .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
+//                        ;
+//                        return (request);
+//                    }
+//                },
+                new PostRequestBuilder(url, data) {
                     @Override
-                    protected FullHttpRequest setup(FullHttpRequest request) {
-                        request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+                    public void setup(PostRequestBuilder builder) {
+                        builder.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
                                 .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
                                 .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
                         ;
-                        return (request);
                     }
                 },
                 new PipelineBuilder() {
                     @Override
-                    protected ChannelPipeline setup(ChannelPipeline pipeline) {
+                    protected void setup(ChannelPipeline pipeline) {
                         pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
                             protected Integer process(String s) {
@@ -73,7 +82,6 @@ public class ConcurrentNioTest {
                                 return (s.length());
                             }
                         });
-                        return (pipeline);
                     }
 
                 }

@@ -49,7 +49,7 @@ public class ByteBufLifecycleTest {
         assertEquals(1, sliced.refCnt());
 
         buf.retain();
-        assertEquals(2, sliced.refCnt());
+        assertEquals(2, buf.refCnt());
 
         ByteBuf copied = sliced.copy();
         assertEquals(1, copied.refCnt());

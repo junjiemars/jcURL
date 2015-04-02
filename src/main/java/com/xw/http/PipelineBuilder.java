@@ -21,7 +21,7 @@ public abstract class PipelineBuilder {
         _timeout = new Integer(timeout);
     }
 
-    public final ChannelPipeline build(final ChannelPipeline pipeline) {
+    public final void build(final ChannelPipeline pipeline) {
         if (_timeout > 0 ) {
             pipeline.addLast(new ReadTimeoutHandler(_timeout, TimeUnit.MILLISECONDS));
         }
@@ -30,11 +30,11 @@ public abstract class PipelineBuilder {
 
         pipeline.addLast(new HttpContentDecompressor());
 
-
-        return (setup(pipeline));
+        setup(pipeline);
     }
 
-    protected abstract ChannelPipeline setup(final ChannelPipeline pipeline);
+    protected abstract void setup(final ChannelPipeline pipeline);
 
     private final int _timeout;
 }
+

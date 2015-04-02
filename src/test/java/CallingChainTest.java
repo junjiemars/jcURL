@@ -36,7 +36,7 @@ public class CallingChainTest {
                      },
                 new PipelineBuilder(timeout) {
                     @Override
-                    public ChannelPipeline setup(final ChannelPipeline pipeline) {
+                    public void setup(final ChannelPipeline pipeline) {
                         // default http content processing
 
                         pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
@@ -51,7 +51,6 @@ public class CallingChainTest {
                                 return (s.length());
                             }
                         });
-                        return (pipeline);
                     }
                 });
     }
@@ -70,7 +69,7 @@ public class CallingChainTest {
                      },
                 new PipelineBuilder(timeout) {
                     @Override
-                    public ChannelPipeline setup(final ChannelPipeline pipeline) {
+                    public void setup(final ChannelPipeline pipeline) {
                         // default http content processing
                         pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
@@ -82,7 +81,6 @@ public class CallingChainTest {
                                 return (s.length());
                             }
                         });
-                        return (pipeline);
                     }
                 });
     }

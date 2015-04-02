@@ -115,7 +115,7 @@ public final class Core {
 
 
         if (options.concurrent() <= 0) {
-            final Tuple<RequestBuilder, PipelineBuilder, Boolean> tuple = HttpMethod.POST.equals(options.method())
+            final Tuple<RequestBuilder0, PipelineBuilder, Boolean> tuple = HttpMethod.POST.equals(options.method())
                     ? _http_post(options) : _http_get(options);
             tuple.call();
         } else {
@@ -143,27 +143,37 @@ public final class Core {
         _l.info(H.pad_right("*", A.OPTION_PROMPT_LEN, "="));
     }
 
-    private static Tuple<RequestBuilder, PipelineBuilder, Boolean> _http_get(final Options options) {
+    private static Tuple<RequestBuilder0, PipelineBuilder, Boolean> _http_get(final Options options) {
         _info(options);
 
-        final RequestBuilder requested = new RequestBuilder(options.url()) {
+//        final RequestBuilder requested = new RequestBuilder(options.url()) {
+//            @Override
+//            public FullHttpRequest setup(FullHttpRequest request) {
+//                // setup ur customized http headers/contents processing
+//                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+//                request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
+//
+//                request.headers().set(
+//                        HttpHeaderNames.COOKIE,
+//                        ClientCookieEncoder.encode(
+//                                new DefaultCookie("my-cookie", "foo"),
+//                                new DefaultCookie("another-cookie", "bar")));
+//                return (request);
+//            }
+//        };
+        final GetRequestBuilder requested = new GetRequestBuilder(options.url()) {
             @Override
-            public FullHttpRequest setup(FullHttpRequest request) {
-                // setup ur customized http headers/contents processing
-                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-                request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
-
-                request.headers().set(
-                        HttpHeaderNames.COOKIE,
+            public void setup(final GetRequestBuilder builder) {
+                builder.headers().set(HttpHeaderNames.COOKIE,
                         ClientCookieEncoder.encode(
                                 new DefaultCookie("my-cookie", "foo"),
                                 new DefaultCookie("another-cookie", "bar")));
-                return (request);
             }
         };
+
         final PipelineBuilder pipelined = new PipelineBuilder(options.timeout()) {
             @Override
-            public ChannelPipeline setup(ChannelPipeline pipeline) {
+            public void setup(final ChannelPipeline pipeline) {
                 // default http header processing
                 if (options.header()) {
                     pipeline.addLast(new DefaultHeaderHandler<Integer>() {
@@ -178,7 +188,7 @@ public final class Core {
                 if (options.body()) {
                     pipeline.addLast(new DefaultContentHandler<Integer>() {
                         @Override
-                        protected Integer process(String s) {
+                        protected Integer process(final String s) {
                             _l.info(String.format("<BEGIN OF CONTENT:%s>", s.length()));
                             _l.info(s);
                             _l.info("<END OF CONTENT>");
@@ -186,44 +196,49 @@ public final class Core {
                         }
                     });
                 }
-                return (pipeline);
             }
         };
 
-        return (new Tuple<RequestBuilder, PipelineBuilder, Boolean>(requested, pipelined) {
+        return (new Tuple<RequestBuilder0, PipelineBuilder, Boolean>(requested, pipelined) {
             @Override
             public Boolean call() {
-                return (NClient.get(x(), y()));
+                return (NClient.request(x(), y()));
             }
         });
     }
 
-    private static Tuple<RequestBuilder, PipelineBuilder, Boolean> _http_post(final Options options) {
+    private static Tuple<RequestBuilder0, PipelineBuilder, Boolean> _http_post(final Options options) {
         _info(options);
         final Long begin = System.currentTimeMillis();
 
-        final RequestBuilder requested = new RequestBuilder(options.url(), options.data()) {
+//        final RequestBuilder requested = new RequestBuilder(options.url(), options.data()) {
+//            @Override
+//            public FullHttpRequest setup(FullHttpRequest request) {
+//                // customize the http headers
+//                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+//                        .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
+//                        .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
+//                ;
+//
+////                request.headers().set(
+////                        HttpHeaderNames.COOKIE,
+////                        ClientCookieEncoder.encode(
+////                                new DefaultCookie("my-cookie", "foo"),
+////                                new DefaultCookie("another-cookie", "bar")));
+//
+//                _info_headers(request.headers());
+//                return (request);
+//            }
+//        };
+        final RequestBuilder0 requested = new PostRequestBuilder(options.url(), options.data()) {
             @Override
-            public FullHttpRequest setup(FullHttpRequest request) {
-                // customize the http headers
-                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
-                        .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
-                        .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML)
-                ;
+            public void setup(final PostRequestBuilder builder) {
 
-//                request.headers().set(
-//                        HttpHeaderNames.COOKIE,
-//                        ClientCookieEncoder.encode(
-//                                new DefaultCookie("my-cookie", "foo"),
-//                                new DefaultCookie("another-cookie", "bar")));
-
-                _info_headers(request.headers());
-                return (request);
             }
         };
         final PipelineBuilder pipelined = new PipelineBuilder(options.timeout()) {
             @Override
-            public ChannelPipeline setup(ChannelPipeline pipeline) {
+            public void setup(ChannelPipeline pipeline) {
                 if (options.header() /* show the response's headers? */) {
                     pipeline.addLast(new DefaultHeaderHandler<Integer>() {
                         @Override
@@ -263,15 +278,14 @@ public final class Core {
                         }
                     });
                 }
-                return (pipeline);
             }
         };
 
 
-        return (new Tuple<RequestBuilder, PipelineBuilder, Boolean>(requested, pipelined) {
+        return (new Tuple<RequestBuilder0, PipelineBuilder, Boolean>(requested, pipelined) {
             @Override
             public Boolean call() {
-                return (NClient.post(x(), y()));
+                return (NClient.request(x(), y()));
             }
         });
     }

@@ -111,9 +111,7 @@ public abstract class RequestBuilder {
     private static ByteBuf _to_buf(final String data) {
         return (PooledByteBufAllocator.DEFAULT
 //                .heapBuffer() // JVM heap buffer
-                .directBuffer() // out side of the JVM heap buffer
-                .alloc()
-                .buffer(512)
+                .directBuffer(512) // out side of the JVM heap buffer
                 .writeBytes(data.getBytes(CharsetUtil.UTF_8)));
     }
 

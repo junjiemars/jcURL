@@ -23,13 +23,7 @@ public abstract class DefaultContentHandler<T>
         /*implements ReferenceCounted*/ {
 
     private static final Logger _l = LogManager.getLogger(DefaultContentHandler.class);
-    //    private final StringBuilder _content;
     private final ByteBuf _content;
-
-//    @Override
-//    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-//        _l.info("<READ COMPLETED>");
-//    }
 
     protected DefaultContentHandler() {
         this(1024);
@@ -37,9 +31,7 @@ public abstract class DefaultContentHandler<T>
 
     protected DefaultContentHandler(int capacity) {
         _content = PooledByteBufAllocator.DEFAULT
-                .heapBuffer() // faster allocate
-                .alloc().buffer(capacity);
-//        _content = new StringBuilder(capacity);
+                .heapBuffer(capacity); // faster allocate
     }
 
     @Override
@@ -55,7 +47,13 @@ public abstract class DefaultContentHandler<T>
 
             if (content instanceof LastHttpContent) {
                 try {
-                    process(_content.toString(CharsetUtil.UTF_8));
+                    final String s = _content.toString(CharsetUtil.UTF_8);
+                    ctx.executor().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            process(s);
+                        }
+                    });
                 } catch (final Exception ex) {
                     _l.error(ex);
                 } finally {
@@ -70,6 +68,10 @@ public abstract class DefaultContentHandler<T>
         } finally {
             content.release();
         }
+    }
+
+    private static final void nio_process() {
+
     }
 
     protected abstract T process(final String s);
