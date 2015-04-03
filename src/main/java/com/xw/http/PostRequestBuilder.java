@@ -20,10 +20,11 @@ public abstract class PostRequestBuilder
     public PostRequestBuilder(final String uri, final String content) {
         this(HttpVersion.HTTP_1_1, HttpMethod.POST,
                 uri,
-                PooledByteBufAllocator.DEFAULT
-                        .directBuffer()
-                        .writeBytes(content.getBytes(CharsetUtil.UTF_8)),
-                true);
+                H.is_null_or_empty(content) ? null :
+                        PooledByteBufAllocator.DEFAULT
+                                .directBuffer()
+                                .writeBytes(content.getBytes(CharsetUtil.UTF_8)),
+                false);
     }
 
     protected PostRequestBuilder(HttpVersion httpVersion, HttpMethod method,

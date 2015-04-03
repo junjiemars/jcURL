@@ -14,7 +14,7 @@ public abstract class GetRequestBuilder
         implements RequestBuilder<GetRequestBuilder> {
 
     public GetRequestBuilder(final String url) {
-        this(HttpVersion.HTTP_1_1, HttpMethod.GET, url, true);
+        this(HttpVersion.HTTP_1_1, HttpMethod.GET, url, false);
     }
 
     protected GetRequestBuilder(HttpVersion httpVersion, HttpMethod method,

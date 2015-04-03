@@ -1,7 +1,6 @@
 package com.xw.http;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -9,9 +8,10 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.ReferenceCounted;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.sql.Ref;
 
 /**
  * Author: junjie
@@ -31,7 +31,8 @@ public abstract class DefaultContentHandler<T>
 
     protected DefaultContentHandler(int capacity) {
         _content = PooledByteBufAllocator.DEFAULT
-                .heapBuffer(capacity); // faster allocate and access
+//                .heapBuffer(capacity); // faster allocate and access
+                .directBuffer(capacity);
     }
 
     @Override
@@ -42,36 +43,20 @@ public abstract class DefaultContentHandler<T>
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, HttpContent content) {
-        try {
-            _content.writeBytes(content.content());
+        _content.writeBytes(content.content());
 
-            if (content instanceof LastHttpContent) {
-                try {
-                    final String s = _content.toString(CharsetUtil.UTF_8);
-                    ctx.executor().execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            process(s);
-                        }
-                    });
-                } catch (final Exception ex) {
-                    _l.error(ex);
-                } finally {
-                    ReferenceCountUtil.safeRelease(_content);
-                }
+        if (content instanceof LastHttpContent) {
+            try {
+                process(_content.toString(CharsetUtil.UTF_8));
+            } catch (final Exception ex) {
+                _l.error(ex);
+            } finally {
+                ReferenceCountUtil.safeRelease(content.content());
+                content.release();
                 ctx.close();
-            } else {
-                content.retain();
+                ReferenceCountUtil.safeRelease(_content);
             }
-        } catch (final Exception ex) {
-            _l.error(ex);
-        } finally {
-            content.release();
         }
-    }
-
-    private static final void nio_process() {
-
     }
 
     protected abstract T process(final String s);

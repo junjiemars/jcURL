@@ -112,7 +112,6 @@ public final class Core {
             Options.save(options, save);
         }
 
-
         if (options.concurrent() <= 0) {
             (HttpMethod.POST.equals(options.method()) ? _http_post(options) : _http_get(options)).call();
         } else {
@@ -227,23 +226,24 @@ public final class Core {
                 }
 
                 // default http content processing
-                if (options.body() /* show the response's body? */) {
-                    pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
-                        @Override
-                        protected Integer process(String s) {
-                            _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d|#%d>",
-                                            H.tid(), s.length(), _sn.getAndIncrement()),
-                                    A.OPTION_PROMPT_LEN, "="));
-                            _l.info(s);
-                            _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d|#%d>",
-                                            H.tid(), s.length(), _sn.get()),
-                                    A.OPTION_PROMPT_LEN, "="));
+                pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
+                    @Override
+                    protected Integer process(String s) {
+                        if (!options.body()) return (0);
 
-                            _l.info(String.format("elapsed:%d", System.currentTimeMillis()-begin));
-                            return (s.length());
-                        }
-                    });
-                }
+                        _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d|#%d>",
+                                        H.tid(), s.length(), _sn.getAndIncrement()),
+                                A.OPTION_PROMPT_LEN, "="));
+                        _l.info(s);
+                        _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d|#%d>",
+                                        H.tid(), s.length(), _sn.get()),
+                                A.OPTION_PROMPT_LEN, "="));
+
+                        _l.info(String.format("elapsed:%d", System.currentTimeMillis() - begin));
+                        return (s.length());
+                    }
+                });
+
             }
         };
 
