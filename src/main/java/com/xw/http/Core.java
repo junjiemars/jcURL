@@ -40,10 +40,11 @@ public final class Core {
                 new LongOpt("data", LongOpt.OPTIONAL_ARGUMENT, null, 'd'),
                 new LongOpt("header", LongOpt.OPTIONAL_ARGUMENT, null, 'H'),
                 new LongOpt("timeout", LongOpt.OPTIONAL_ARGUMENT, null, 't'),
-                new LongOpt("concurrent", LongOpt.OPTIONAL_ARGUMENT, null, 'm')
+                new LongOpt("concurrent", LongOpt.OPTIONAL_ARGUMENT, null, 'm'),
+                new LongOpt("cpu", LongOpt.NO_ARGUMENT, null, 'P')
         };
 
-        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:t:m:;", opts);
+        final Getopt g = new Getopt(A.NAME, args, "hc:s:u:gpd:H:t:m:P;", opts);
         g.setOpterr(true);
         int c;
 
@@ -55,6 +56,7 @@ public final class Core {
         int header = 0;
         int timeout = 0;
         int concurrent = 0;
+        int cpu_sensible = 0;
 
         while ((c = g.getopt()) != -1)
             switch (c) {
@@ -85,6 +87,9 @@ public final class Core {
                 case 'm':
                     concurrent = H.str_to_int(g.getOptarg(), 0);
                     break;
+                case 'P':
+                    cpu_sensible = Runtime.getRuntime().availableProcessors();
+                    break;
                 case 'h':
                     _help();
                     break;
@@ -101,7 +106,7 @@ public final class Core {
             }
 
         final Options options = (H.is_null_or_empty(conf)
-                ? new Options(url, method, data, header, timeout, concurrent) : Options.read(conf)
+                ? new Options(url, method, data, header, timeout, concurrent, cpu_sensible) : Options.read(conf)
         );
         if (null == options) {
             _l.error(String.format("<var:options> can't create Options%s",
@@ -115,7 +120,8 @@ public final class Core {
         if (options.concurrent() <= 0) {
             (HttpMethod.POST.equals(options.method()) ? _http_post(options) : _http_get(options)).call();
         } else {
-            final ExecutorService e = Executors.newFixedThreadPool(options.concurrent());
+            Runtime.getRuntime().availableProcessors();
+            final ExecutorService e = Executors.newFixedThreadPool(options.cpu() > 0 ? options.cpu() : options.concurrent());
             final Set<Callable<Boolean>> invokes = new HashSet<Callable<Boolean>>(options.concurrent());
 
             for (int i = 0; i < options.concurrent(); i++) {
@@ -135,7 +141,14 @@ public final class Core {
             } finally {
                 e.shutdown();
             }
+
+            while (!e.isTerminated()) {
+
+            }
+            _l.info("###$$$");
         }
+
+
 
         _l.info(H.pad_right("*", A.OPTION_PROMPT_LEN, "="));
     }
@@ -283,6 +296,7 @@ public final class Core {
         _l.info("\t--header: 0:header-content; 1:header-only; 2:content-only");
         _l.info("\t--timeout: default 0 milliseconds");
         _l.info("\t--concurrent: concurrently run");
+        _l.info("\t--cpu: concurrent threads equals processors count");
         System.exit(0);
     }
 

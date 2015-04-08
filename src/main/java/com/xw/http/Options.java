@@ -25,14 +25,17 @@ public final class Options {
     private int _header; // 0:all; 1:header-only 2:content-only
     private int _timeout;
     private int _concurrent;
+    private int _cpu;
 
-    public Options(final String url, final HttpMethod method, final String data, final int header, final int timeout, final int concurrent) {
+    public Options(final String url, final HttpMethod method, final String data, final int header,
+                   final int timeout, final int concurrent, final int cpu) {
         _url = url;
         _method = method;
         _header = header;
         _data = _rebuild_data(data);
         _timeout = timeout;
         _concurrent = concurrent;
+        _cpu = cpu;
     }
 
     public final String url() {
@@ -62,6 +65,8 @@ public final class Options {
     public final int concurrent() {
         return (_concurrent);
     }
+
+    public final int cpu() { return (_cpu); }
 
     public static Options read(final String conf) {
         final String j = H.read_file(conf);
