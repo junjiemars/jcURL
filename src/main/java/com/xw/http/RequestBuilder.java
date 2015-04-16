@@ -1,6 +1,6 @@
 package com.xw.http;
 
-import io.netty.handler.codec.AsciiString;
+import io.netty.util.AsciiString;
 
 /**
  * Author: junjie
