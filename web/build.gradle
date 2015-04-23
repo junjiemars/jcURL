@@ -1,14 +1,45 @@
 apply plugin: 'java'
 apply plugin: 'war'
-apply plugin: 'jetty'
+//apply plugin: 'jetty'
+apply plugin: 'com.bmuschko.cargo'
 
 sourceCompatibility = 1.6
 version = '1.0'
-jettyRun.webAppSourceDirectory = file("src/main/java")
-httpPort=8080
-stopPort=8090
-//debug server:
 
+//retrieve cargo plugin
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.1'
+    }
+}
+
+//configure cargo plugin
+cargo {
+    containerId = 'jetty8x'
+    port = 8080
+
+    deployable {
+        file = file('build/libs/NHttpWeb-1.0.war')
+        context = '/'
+    }
+
+    local {
+        installer {
+            installUrl = 'http://mirrors.yun-idc.com/eclipse/jetty/stable-8/dist/jetty-distribution-8.1.16.v20140903.tar.gz'
+            downloadDir = file("$buildDir/download")
+            extractDir = file("$buildDir/extract")
+        }
+        // homeDir = file('/Users/twer/Documents/lib/jetty-8.1')
+    }
+}
+
+//jettyRun.webAppSourceDirectory = file("src/main/java")
+//httpPort=8080
+//stopPort=8090
 
 repositories {
     mavenCentral()
@@ -23,10 +54,17 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 //    compile 'javax.servlet:servlet-api:2.5'
 //    compile 'javax.servlet:servlet-api:3.0-alpha-1'
-    compile 'jetty:javax.servlet:5.1.12'
+//    compile 'jetty:javax.servlet:8.1.16'
 //    compile fileTree(dir: '/home/junjie/apps/NHttpClient.git/build/libs', include: '*.jar')
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile project(':NHttpClient')
     compile 'org.apache.logging.log4j:log4j-api:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
     compile 'org.apache.logging.log4j:log4j-web:2.1'
+}
+
+war {
+    from('src/main/java/WEB-INF') {
+        include 'index.html'
+    }
 }
