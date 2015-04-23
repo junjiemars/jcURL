@@ -24,7 +24,7 @@ cargo {
 
     deployable {
         file = file('build/libs/NHttpWeb-1.0.war')
-        context = '/'
+        context = '/async'
     }
 
     local {
@@ -52,11 +52,9 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
-//    compile 'javax.servlet:servlet-api:2.5'
-//    compile 'javax.servlet:servlet-api:3.0-alpha-1'
-//    compile 'jetty:javax.servlet:8.1.16'
-//    compile fileTree(dir: '/home/junjie/apps/NHttpClient.git/build/libs', include: '*.jar')
-    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    //compile 'javax.servlet:servlet-api:2.5'
+    compile fileTree(dir: '/opt/jetty/v8116/lib/', include: 'servlet-api-3.0.jar')
+    //compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile project(':NHttpClient')
     compile 'org.apache.logging.log4j:log4j-api:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'

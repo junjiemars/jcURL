@@ -19,7 +19,7 @@ import java.io.IOException;
  * Date: 4/20/15.
  * Target: <>
  */
-@WebServlet("/HelloWorld")
+//@WebServlet("/HelloWorld")
 public class HelloWorldServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
@@ -55,7 +55,7 @@ public class HelloWorldServlet extends HttpServlet {
             }
         });
 
-
+        out.println("non-async servlet processing");
 
     }
 
