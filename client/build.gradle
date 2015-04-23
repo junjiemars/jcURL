@@ -1,0 +1,45 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.6
+version = '1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        // netty.io maven repo
+        url "http://clinker.netty.io/nexus/content/repositories/snapshots"
+    }
+    mavenLocal()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+//    compile 'io.netty:netty-all:4.0.26.Final'
+    compile 'io.netty:netty-all:4.1.0.Beta5-SNAPSHOT'
+    compile 'gnu.getopt:java-getopt:1.0.13'
+    compile 'org.apache.logging.log4j:log4j-api:2.1'
+    compile 'org.apache.logging.log4j:log4j-core:2.1'
+    compile 'com.google.code.gson:gson:2.3.1'
+}
+
+task uberjar(type: Jar, dependsOn: jar/*,dependsOn:[':compileJava',':compileGroovy'*/) {
+    //jar.baseName="NHttpClient"
+    from files(sourceSets.main.output.classesDir)
+    // just copy log4j2.xml to classpath,
+    // or u can specify it with -D log4j.configurationFile=<log4j2.xml-path>
+    from 'src/main/resources'
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+    exclude "META-INF/*.SF"
+    exclude "META-INF/*.RSA"
+
+    manifest {
+        attributes(
+                'Create-By': System.getProperty('java.version'),
+                'Main-Class': "${System.getProperty('entry.class') ?: 'com.xw.http.Core'}",
+                'Build-Version': version,
+                'Build-Date': new Date()
+        )
+    }
+}
+
+

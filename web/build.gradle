@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'jetty'
+
+sourceCompatibility = 1.6
+version = '1.0'
+jettyRun.webAppSourceDirectory = file("src/main/java")
+httpPort=8080
+stopPort=8090
+//debug server:
+
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        // netty.io maven repo
+        url "http://clinker.netty.io/nexus/content/repositories/snapshots"
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+//    compile 'javax.servlet:servlet-api:2.5'
+//    compile 'javax.servlet:servlet-api:3.0-alpha-1'
+    compile 'jetty:javax.servlet:5.1.12'
+//    compile fileTree(dir: '/home/junjie/apps/NHttpClient.git/build/libs', include: '*.jar')
+    compile project(':NHttpClient')
+    compile 'org.apache.logging.log4j:log4j-api:2.1'
+    compile 'org.apache.logging.log4j:log4j-core:2.1'
+    compile 'org.apache.logging.log4j:log4j-web:2.1'
+}

@@ -1,2 +1,8 @@
-rootProject.name = 'NHttpClient'
+//rootProject.name = 'NHttpClient'
+
+include 'client'
+rootProject.children.find { it.name == 'client' }.name = 'NHttpClient'
+
+include 'web'
+rootProject.children.find { it.name == 'web' }.name = 'NHttpWeb'
 
