@@ -55,7 +55,7 @@ public class HelloWorldServlet extends HttpServlet {
             }
         });
 
-        out.println("non-async servlet processing");
+        out.println("normal servlet just like Servlet 2.5");
 
     }
 
