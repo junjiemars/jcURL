@@ -27,13 +27,22 @@ cargo {
         context = '/'
     }
 
+//    remote {
+//        hostname = 'localhost'
+//        username = 'junjie'
+//        password = ''
+//    }
+
     local {
         installer {
             installUrl = 'http://mirrors.yun-idc.com/eclipse/jetty/stable-8/dist/jetty-distribution-8.1.16.v20140903.tar.gz'
             downloadDir = file("$buildDir/download")
             extractDir = file("$buildDir/extract")
+            jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
         }
-        // homeDir = file('/Users/twer/Documents/lib/jetty-8.1')
+//        homeDir = file('/opt/jetty/v8116')
+//        outputFile = file('build/output.log')
+//        timeout = 60000
     }
 }
 

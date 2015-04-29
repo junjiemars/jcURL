@@ -1,5 +1,10 @@
 package com.xw.http.web;
 
+import com.xw.http.DefaultContentHandler;
+import com.xw.http.NClient;
+import com.xw.http.PipelineBuilder;
+import com.xw.http.PostRequestBuilder;
+import io.netty.channel.ChannelPipeline;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,8 +24,9 @@ import java.text.MessageFormat;
  * Date: 4/28/15.
  * Target: <>
  */
-@WebServlet(value = "/async", asyncSupported = true)
-public class AsyncServlet extends HttpServlet {
+@WebServlet(value = "/netty", asyncSupported = true)
+public class AsyncServletToNetty extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doGet(req, resp);
@@ -30,7 +36,6 @@ public class AsyncServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
-
         // create the async context, otherwise getAsyncContext() will be null
         final AsyncContext ctx = req.startAsync();
 
@@ -56,25 +61,30 @@ public class AsyncServlet extends HttpServlet {
             }
         });
 
-        // spawn some task in a background thread
-        ctx.start(new Runnable() {
-            public void run() {
-                try {
-                    ctx.getResponse().getOutputStream().println(
-                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
-                            Thread.currentThread().getId()));
-//                    ctx.getResponse().getWriter().write(
-//                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
-//                                    Thread.currentThread().getId()));
-                } catch (IOException e) {
-                    _l.error("#Problem processing task", e);
-                }
 
-                ctx.complete();
+        NClient.request(new PostRequestBuilder("http://www.baidu.com", "Hello") {
+            @Override
+            public void setup(PostRequestBuilder builder) {
+
+            }
+        }, new PipelineBuilder() {
+            @Override
+            protected void setup(ChannelPipeline pipeline) {
+                pipeline.addLast(new DefaultContentHandler<String>() {
+
+                    @Override
+                    protected String process(String s) {
+                        try {
+                            ctx.getResponse().getOutputStream().println(s);
+                        } catch (IOException e) {
+                            _l.error(e);
+                        }
+                        return s;
+                    }
+                });
             }
         });
-
     }
 
-    private static final Logger _l = LogManager.getLogger(AsyncServlet.class);
+    private static final Logger _l = LogManager.getLogger(AsyncServletToNetty.class);
 }
