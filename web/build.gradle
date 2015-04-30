@@ -21,7 +21,7 @@ buildscript {
 //cargo {
 //      jetty8x will return 500 for timeout
 //    containerId = 'jetty8x'
-//    port = 8080
+//    port = http_port(8080);
 //
 //    deployable {
 //        file = file('build/libs/NHttpWeb-1.0.war')
@@ -50,7 +50,7 @@ buildscript {
 //configure cargo plugin for tomcat7x
 cargo {
     containerId = 'tomcat7x'
-    port = 8080
+    port = http_port(8080);
 
     deployable {
         file = file('build/libs/NHttpWeb-1.0.war')
@@ -97,3 +97,9 @@ war {
     }
     webXml = file('src/main/java/WEB-INF/web.xml')
 }
+
+int http_port(port) {
+    def p = System.getProperty("http.port");
+    p ? p.toInteger() : port
+}
+
