@@ -60,6 +60,7 @@ public class AsyncServlet extends HttpServlet {
         ctx.start(new Runnable() {
             public void run() {
                 try {
+                    Thread.sleep(2000);
                     ctx.getResponse().getOutputStream().println(
                             MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
                             Thread.currentThread().getId()));
@@ -68,7 +69,10 @@ public class AsyncServlet extends HttpServlet {
 //                                    Thread.currentThread().getId()));
                 } catch (IOException e) {
                     _l.error("#Problem processing task", e);
+                } catch (InterruptedException ie) {
+                    _l.error("#Problem processing task", ie);
                 }
+
 
                 ctx.complete();
             }

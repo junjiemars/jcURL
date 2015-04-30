@@ -40,29 +40,9 @@ public class AsyncServletToNetty extends HttpServlet {
         final AsyncContext ctx = req.startAsync();
 
         // set the timeout
-        ctx.setTimeout(30000);
+        ctx.setTimeout(2000);
 
-        // attach listener to respond to lifecycle events of this AsyncContext
-        ctx.addListener(new AsyncListener() {
-            public void onComplete(AsyncEvent event) throws IOException {
-                _l.info("#onComplete called");
-            }
-
-            public void onTimeout(AsyncEvent event) throws IOException {
-                _l.info("#onTimeout called");
-            }
-
-            public void onError(AsyncEvent event) throws IOException {
-                _l.info("#onError called");
-            }
-
-            public void onStartAsync(AsyncEvent event) throws IOException {
-                _l.info("#onStartAsync called");
-            }
-        });
-
-
-        NClient.request(new PostRequestBuilder("http://www.baidu.com", "Hello") {
+        NClient.request(new PostRequestBuilder("http://cn.bing.com", "Hello") {
             @Override
             public void setup(PostRequestBuilder builder) {
 
@@ -75,7 +55,7 @@ public class AsyncServletToNetty extends HttpServlet {
                     @Override
                     protected String process(String s) {
                         try {
-                            ctx.getResponse().getOutputStream().println(s);
+                            ctx.getResponse().getWriter().write(s);
                         } catch (IOException e) {
                             _l.error(e);
                         }

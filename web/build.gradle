@@ -17,9 +17,39 @@ buildscript {
     }
 }
 
-//configure cargo plugin
+////configure cargo plugin for jetty8x
+//cargo {
+//      jetty8x will return 500 for timeout
+//    containerId = 'jetty8x'
+//    port = 8080
+//
+//    deployable {
+//        file = file('build/libs/NHttpWeb-1.0.war')
+//        context = '/'
+//    }
+//
+////    remote {
+////        hostname = 'localhost'
+////        username = 'junjie'
+////        password = ''
+////    }
+//
+//    local {
+//        installer {
+//            installUrl = 'http://mirrors.yun-idc.com/eclipse/jetty/stable-8/dist/jetty-distribution-8.1.16.v20140903.tar.gz'
+//            downloadDir = file("$buildDir/download")
+//            extractDir = file("$buildDir/extract")
+//            jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+//        }
+////        homeDir = file('/opt/jetty/v8116')
+////        outputFile = file('build/output.log')
+////        timeout = 60000
+//    }
+//}
+
+//configure cargo plugin for tomcat7x
 cargo {
-    containerId = 'jetty8x'
+    containerId = 'tomcat7x'
     port = 8080
 
     deployable {
@@ -27,22 +57,13 @@ cargo {
         context = '/'
     }
 
-//    remote {
-//        hostname = 'localhost'
-//        username = 'junjie'
-//        password = ''
-//    }
-
     local {
         installer {
-            installUrl = 'http://mirrors.yun-idc.com/eclipse/jetty/stable-8/dist/jetty-distribution-8.1.16.v20140903.tar.gz'
+            installUrl = 'http://apache.osuosl.org/tomcat/tomcat-7/v7.0.61/bin/apache-tomcat-7.0.61.zip'
             downloadDir = file("$buildDir/download")
             extractDir = file("$buildDir/extract")
             jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
         }
-//        homeDir = file('/opt/jetty/v8116')
-//        outputFile = file('build/output.log')
-//        timeout = 60000
     }
 }
 
