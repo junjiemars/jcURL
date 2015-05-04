@@ -97,6 +97,13 @@ war {
         include 'index.html'
     }
     webXml = file('src/main/java/WEB-INF/web.xml')
+    manifest {
+        attributes(
+                'Create-By': System.getProperty('java.version'),
+                'Build-Version': version,
+                'Build-Date': new Date()
+        )
+    }
 }
 
 int http_port(port) {
