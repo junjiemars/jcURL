@@ -32,7 +32,7 @@ public class CallingChainTest {
                     public void setup(final ChannelPipeline pipeline) {
                         // default http content processing
 
-                        pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
+                        pipeline.addLast(new DefaultContentHandler<Integer, Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
                             protected Integer process(String s) {
                                 _l.info(H.pad_right(String.format("##<callB|Tid:%d>",
@@ -62,7 +62,7 @@ public class CallingChainTest {
                     @Override
                     public void setup(final ChannelPipeline pipeline) {
                         // default http content processing
-                        pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
+                        pipeline.addLast(new DefaultContentHandler<Integer, Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
                             protected Integer process(String s) {
                                 _l.info(H.pad_right(String.format("##<callB|Tid:%d>",

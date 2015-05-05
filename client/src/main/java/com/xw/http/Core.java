@@ -182,7 +182,7 @@ public final class Core {
 
                 // default http content processing
                 if (options.body()) {
-                    pipeline.addLast(new DefaultContentHandler<Integer>() {
+                    pipeline.addLast(new DefaultContentHandler<Integer, Integer>() {
                         @Override
                         protected Integer process(final String s) {
                             _l.info(String.format("<BEGIN OF CONTENT:%s>", s.length()));
@@ -239,7 +239,7 @@ public final class Core {
                 }
 
                 // default http content processing
-                pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
+                pipeline.addLast(new DefaultContentHandler<Integer, Integer>(A.OPTION_BLOCK_SIZE) {
                     @Override
                     protected Integer process(String s) {
                         if (!options.body()) return (0);

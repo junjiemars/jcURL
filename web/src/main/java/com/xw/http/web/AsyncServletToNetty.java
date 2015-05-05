@@ -9,15 +9,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.MessageFormat;
 
 /**
  * Author: junjie
@@ -36,12 +33,13 @@ public class AsyncServletToNetty extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
-        // create the async context, otherwise getAsyncContext() will be null
+        // 初始化AsyncContext异步调用场景对象
         final AsyncContext ctx = req.startAsync();
 
-        // set the timeout
+        // 设置超时时间
         ctx.setTimeout(2000);
 
+        // 调用ECP接口，以下代码由ECP封装的Jar库完成，但是必须额外提供AsyncContext对象
         NClient.request(new PostRequestBuilder("http://cn.bing.com", "Hello") {
             @Override
             public void setup(PostRequestBuilder builder) {
@@ -50,12 +48,12 @@ public class AsyncServletToNetty extends HttpServlet {
         }, new PipelineBuilder() {
             @Override
             protected void setup(ChannelPipeline pipeline) {
-                pipeline.addLast(new DefaultContentHandler<String>() {
+                pipeline.addLast(new DefaultContentHandler<String, AsyncContext>(ctx) {
 
                     @Override
                     protected String process(String s) {
                         try {
-                            ctx.getResponse().getWriter().write(s);
+                            _t.getResponse().getWriter().write(s);
                         } catch (IOException e) {
                             _l.error(e);
                         }

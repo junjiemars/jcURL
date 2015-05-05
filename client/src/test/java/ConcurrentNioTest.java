@@ -73,7 +73,7 @@ public class ConcurrentNioTest {
                 new PipelineBuilder() {
                     @Override
                     protected void setup(ChannelPipeline pipeline) {
-                        pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
+                        pipeline.addLast(new DefaultContentHandler<Integer, Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
                             protected Integer process(String s) {
                                 _l.info(H.pad_right(String.format("##<process:%d:%d:%s>#%d",

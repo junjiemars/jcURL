@@ -11,25 +11,29 @@ import io.netty.util.ReferenceCountUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Ref;
-
 /**
  * Author: junjie
  * Date: 3/5/2015.
  * Target: <>
  */
-public abstract class DefaultContentHandler<T>
+public abstract class DefaultContentHandler<R, T>
         extends SimpleChannelInboundHandler<HttpContent>
         /*implements ReferenceCounted*/ {
 
     private static final Logger _l = LogManager.getLogger(DefaultContentHandler.class);
     private final ByteBuf _content;
+    protected final T _t;
 
     protected DefaultContentHandler() {
-        this(1024);
+        this(null);
     }
 
-    protected DefaultContentHandler(int capacity) {
+    protected DefaultContentHandler(final T t) {
+        this(t, 1024);
+    }
+
+    protected DefaultContentHandler(final T t, int capacity) {
+        _t = t;
         _content = PooledByteBufAllocator.DEFAULT
 //                .heapBuffer(capacity); // faster allocate and access
                 .directBuffer(capacity);
@@ -59,5 +63,5 @@ public abstract class DefaultContentHandler<T>
         }
     }
 
-    protected abstract T process(final String s);
+    protected abstract R process(final String s);
 }
