@@ -62,8 +62,13 @@ public class AsyncServlet extends HttpServlet {
                 try {
                     Thread.sleep(2000);
                     ctx.getResponse().getOutputStream().println(
-                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
-                            Thread.currentThread().getId()));
+                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}] at {1}</h1>\n",
+                            Thread.currentThread().getId(),
+                            System.currentTimeMillis()));
+                    Thread.sleep(1000);
+                    ctx.getResponse().getOutputStream().println(
+                        MessageFormat.format("<h1>another processing at {0}\n",
+                            System.currentTimeMillis()));
 //                    ctx.getResponse().getWriter().write(
 //                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
 //                                    Thread.currentThread().getId()));
