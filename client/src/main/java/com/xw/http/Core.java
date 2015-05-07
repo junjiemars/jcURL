@@ -3,7 +3,11 @@ package com.xw.http;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.cookie.*;
+import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -149,7 +153,6 @@ public final class Core {
         }
 
 
-
         _l.info(H.pad_right("*", A.OPTION_PROMPT_LEN, "="));
     }
 
@@ -161,7 +164,7 @@ public final class Core {
             @Override
             public void setup(final GetRequestBuilder builder) {
                 builder.headers().set(HttpHeaderNames.COOKIE,
-                        ClientCookieEncoder.encode(
+                        ClientCookieEncoder.STRICT.encode(
                                 new DefaultCookie("my-cookie", "foo"),
                                 new DefaultCookie("another-cookie", "bar")));
             }
