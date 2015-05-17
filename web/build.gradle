@@ -1,75 +1,23 @@
-apply plugin: 'java'
-apply plugin: 'war'
-apply plugin: 'com.bmuschko.cargo'
-
-sourceCompatibility = 1.6
-version = '1.0'
-def war_name = 'nio.war'
-
-//retrieve cargo plugin
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
+        mavenLocal()
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-cargo-plugin:2.1'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
     }
 }
 
-////configure cargo plugin for jetty8x
-//cargo {
-//      jetty8x will return 500 for timeout
-//    containerId = 'jetty8x'
-//    port = http_port(8080);
-//
-//    deployable {
-//        file = file('build/libs/' + war_name())
-//        context = '/'
-//    }
-//
-////    remote {
-////        hostname = 'localhost'
-////        username = 'junjie'
-////        password = ''
-////    }
-//
-//    local {
-//        installer {
-//            installUrl = 'http://mirrors.yun-idc.com/eclipse/jetty/stable-8/dist/jetty-distribution-8.1.16.v20140903.tar.gz'
-//            downloadDir = file("$buildDir/download")
-//            extractDir = file("$buildDir/extract")
-//            jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
-//        }
-////        homeDir = file('/opt/jetty/v8116')
-////        outputFile = file('build/output.log')
-////        timeout = 60000
-//    }
-//}
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'spring-boot'
 
-//configure cargo plugin for tomcat7x
-cargo {
-    containerId = 'tomcat7x'
-    port = http_port(8080);
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
-    deployable {
-        file = file('build/libs/' + war_name)
-        context = '/'
-    }
-
-    local {
-        installer {
-            installUrl = 'http://mirror.bit.edu.cn/apache/tomcat/tomcat-7/v7.0.61/bin/apache-tomcat-7.0.61.tar.gz'
-            downloadDir = file("$buildDir/download")
-            extractDir = file("$buildDir/extract")
-            jvmArgs = '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
-        }
-    }
-}
-
-//jettyRun.webAppSourceDirectory = file("src/main/java")
-//httpPort=8080
-//stopPort=8090
+version = '1.0'
+def archive_name = 'nio'
 
 repositories {
     mavenCentral()
@@ -80,19 +28,13 @@ repositories {
     }
 }
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    //compile 'javax.servlet:servlet-api:2.5'
-    //compile fileTree(dir: '/opt/jetty/v8116/lib/', include: 'servlet-api-3.0.jar')
-    compile 'javax.servlet:javax.servlet-api:3.1.0'
-    compile project(':NHttpClient')
-    compile 'org.apache.logging.log4j:log4j-api:2.1'
-    compile 'org.apache.logging.log4j:log4j-core:2.1'
-    compile 'org.apache.logging.log4j:log4j-web:2.1'
+jar {
+    //baseName = archive_name + '.jar'
+    version = version
 }
 
 war {
-    archiveName = war_name
+    //archiveName = archive_name + '.war'
 //    from('src/main/resources') {
 //        include 'index.html'
 //    }
@@ -106,9 +48,13 @@ war {
     }
 }
 
-int http_port(port) {
-    def p = System.getProperty("http.port");
-    p ? p.toInteger() : port
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile project(':NHttpClient')
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'org.apache.logging.log4j:log4j-api:2.1'
+    compile 'org.apache.logging.log4j:log4j-core:2.1'
+    compile 'org.apache.logging.log4j:log4j-web:2.1'
+
+    testCompile('junit:junit')
 }
-
-
