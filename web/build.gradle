@@ -4,6 +4,7 @@ apply plugin: 'com.bmuschko.cargo'
 
 sourceCompatibility = 1.6
 version = '1.0'
+def war_name = 'nio.war'
 
 //retrieve cargo plugin
 buildscript {
@@ -52,7 +53,7 @@ cargo {
     port = http_port(8080);
 
     deployable {
-        file = file('build/libs/' + war_name())
+        file = file('build/libs/' + war_name)
         context = '/'
     }
 
@@ -91,7 +92,7 @@ dependencies {
 }
 
 war {
-    archiveName = war_name()
+    archiveName = war_name
     from('src/main/java/WEB-INF') {
         include 'index.html'
     }
@@ -108,10 +109,6 @@ war {
 int http_port(port) {
     def p = System.getProperty("http.port");
     p ? p.toInteger() : port
-}
-
-def war_name() {
-    'nio.war'
 }
 
 
