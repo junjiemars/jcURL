@@ -93,10 +93,10 @@ dependencies {
 
 war {
     archiveName = war_name
-    from('src/main/resources') {
-        include 'index.html'
-    }
-    webXml = file('src/main/resources/WEB-INF/web.xml')
+//    from('src/main/resources') {
+//        include 'index.html'
+//    }
+//    webXml = file('src/main/resources/WEB-INF/web.xml')
     manifest {
         attributes(
                 'Create-By': System.getProperty('java.version'),
