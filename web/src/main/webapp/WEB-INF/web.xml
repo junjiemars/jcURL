@@ -5,6 +5,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
     <servlet>
         <display-name>Hello</display-name>
         <servlet-name>Hello</servlet-name>
@@ -16,4 +21,17 @@
         <url-pattern>/hello</url-pattern>
     </servlet-mapping>
 
+    <!--<servlet>-->
+        <!--<servlet-name>greeting</servlet-name>-->
+        <!--<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>-->
+        <!--<load-on-startup>1</load-on-startup>-->
+    <!--</servlet>-->
+
+
+    <!--<servlet-mapping>-->
+        <!--<servlet-name>greeting</servlet-name>-->
+        <!--<url-pattern>/greeting</url-pattern>-->
+        <!--<url-pattern>/greeting.html</url-pattern>-->
+        <!--<url-pattern>*.html</url-pattern>-->
+    <!--</servlet-mapping>-->
 </web-app>

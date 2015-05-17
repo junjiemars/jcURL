@@ -4,14 +4,14 @@ buildscript {
         mavenLocal()
     }
 
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
-    }
+//    dependencies {
+//        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.3.RELEASE")
+//    }
 }
 
 apply plugin: 'java'
 apply plugin: 'war'
-apply plugin: 'spring-boot'
+//apply plugin: 'spring-boot'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -28,13 +28,13 @@ repositories {
     }
 }
 
-jar {
-    //baseName = archive_name + '.jar'
-    version = version
-}
+//jar {
+//    //baseName = archive_name + '.jar'
+//    version = version
+//}
 
 war {
-    //archiveName = archive_name + '.war'
+    archiveName = archive_name + '.war'
 //    from('src/main/resources') {
 //        include 'index.html'
 //    }
@@ -49,12 +49,14 @@ war {
 }
 
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+//    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile project(':NHttpClient')
     compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'org.springframework:spring-webmvc:3.2.13.RELEASE'
+    compile 'org.thymeleaf:thymeleaf:2.1.4.RELEASE'
     compile 'org.apache.logging.log4j:log4j-api:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
     compile 'org.apache.logging.log4j:log4j-web:2.1'
 
-    testCompile('junit:junit')
+    //testCompile('junit:junit')
 }
