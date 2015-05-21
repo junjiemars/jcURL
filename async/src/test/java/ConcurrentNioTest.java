@@ -1,6 +1,6 @@
 import com.xw.http.*;
+import com.xw.http.sync.*;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import org.apache.logging.log4j.LogManager;

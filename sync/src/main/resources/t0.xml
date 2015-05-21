@@ -1,0 +1,49 @@
+<com.xwtech.xwecp.msg.ServiceMessage>
+    <head>
+        <cmd>QRY040065</cmd>
+        <sequence>20150323144608100000000</sequence>
+        <clientTime>20150323144608446</clientTime>
+        <serverTime></serverTime>
+        <type>in</type>
+        <channel>obsh_channel</channel>
+        <user>jhr</user>
+        <pwd>jhr</pwd>
+        <opType>开通/关闭/查询/变更</opType>
+        <userMobile>15195917420</userMobile>
+        <userBrand>动感地带</userBrand>
+        <userCity>14</userCity>
+        <bizCode>biz_code_19234</bizCode>
+    </head>
+    <data class="com.xwtech.xwecp.msg.RequestData">
+        <params>
+            <com.xwtech.xwecp.msg.RequestParameter>
+                <parameterName>cycle</parameterName>
+                <parameterValue class="string">201503</parameterValue>
+            </com.xwtech.xwecp.msg.RequestParameter>
+        </params>
+        <context>
+            <contextParam>
+                <entry>
+                    <string>route_value</string>
+                    <string>14</string>
+                </entry>
+                <entry>
+                    <string>route_type</string>
+                    <string>1</string>
+                </entry>
+                <entry>
+                    <string>ddr_city</string>
+                    <string>14</string>
+                </entry>
+                <entry>
+                    <string>user_id</string>
+                    <string>1425300016047771</string>
+                </entry>
+                <entry>
+                    <string>login_msisdn</string>
+                    <string>15195917420</string>
+                </entry>
+            </contextParam>
+        </context>
+    </data>
+</com.xwtech.xwecp.msg.ServiceMessage>

@@ -1,7 +1,11 @@
 //rootProject.name = 'NHttpClient'
 
-include 'client'
-rootProject.children.find { it.name == 'client' }.name = 'NHttpClient'
+include 'base'
+
+include 'async'
+rootProject.children.find { it.name == 'async' }.name = 'NHttpClient'
+
+include 'sync'
 
 include 'web'
 rootProject.children.find { it.name == 'web' }.name = 'NHttpWeb'

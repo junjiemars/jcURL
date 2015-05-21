@@ -1,6 +1,6 @@
 import com.xw.http.*;
+import com.xw.http.sync.*;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +26,7 @@ public class CallingChainTest {
                                         .set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP)
                                         .set(HttpHeaderNames.CONTENT_TYPE, TEXT_XML);
                             }
-                     },
+                        },
                 new PipelineBuilder(timeout) {
                     @Override
                     public void setup(final ChannelPipeline pipeline) {
