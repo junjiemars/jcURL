@@ -1,7 +1,4 @@
 import com.xw.http.*;
-import com.xw.http.sync.*;
-import com.xw.http.web.*;
-import com.xw.http.web.sync.*;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;

@@ -1,7 +1,4 @@
 import com.xw.http.*;
-import com.xw.http.sync.*;
-import com.xw.http.web.*;
-import com.xw.http.web.sync.*;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -70,7 +67,7 @@ public class CallingChainTest {
                                 _l.info(H.pad_right(String.format("##<callB|Tid:%d>",
                                         H.tid()), A.OPTION_PROMPT_LEN, "#"));
                                 _l.info(s);
-                                _l.info(String.format("<A:%d+B:%d=%d>", aLen, s.length(), aLen+s.length()));
+                                _l.info(String.format("<A:%d+B:%d=%d>", aLen, s.length(), aLen + s.length()));
                                 return (s.length());
                             }
                         });
