@@ -1,5 +1,7 @@
-package com.xw.http;
+package com.xw.http.sync;
 
+import com.xw.http.H;
+import com.xw.http.Tuple;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
 import org.apache.http.HttpEntity;

@@ -1,4 +1,6 @@
-package com.xw.http;
+package com.xw.http.sync;
+
+import com.xw.http.H;
 
 /**
  * Author: junjie

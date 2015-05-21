@@ -1,7 +1,8 @@
-package com.xw.http;
+package com.xw.http.sync;
 
 
 import com.google.gson.reflect.TypeToken;
+import com.xw.http.H;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

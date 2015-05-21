@@ -1,10 +1,7 @@
-package com.xw.http;
+package com.xw.http.sync;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.client.HttpClient;
+import com.xw.http.H;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;

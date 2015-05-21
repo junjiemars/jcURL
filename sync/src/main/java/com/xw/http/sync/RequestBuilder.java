@@ -1,4 +1,4 @@
-package com.xw.http;
+package com.xw.http.sync;
 
 //import io.netty.util.AsciiString;
 

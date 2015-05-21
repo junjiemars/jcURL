@@ -1,26 +1,26 @@
 package com.xw.http.web;
 
+import com.xw.http.*;
+import io.netty.channel.ChannelPipeline;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.MessageFormat;
+import java.io.PrintWriter;
 
 /**
  * Author: junjie
  * Date: 4/28/15.
  * Target: <>
  */
-@WebServlet(value = "/async", asyncSupported = true)
+@WebServlet(value = "/netty", asyncSupported = true)
 public class AsyncServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doGet(req, resp);
@@ -28,61 +28,40 @@ public class AsyncServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
+        final String uri = System.getProperty("http.url");
+        if (H.is_null_or_empty(uri)) {
+            resp.getOutputStream().println("<R:ENV:http.url> is null/empty");
+            resp.getOutputStream().close();
+            return;
+        }
 
-        // create the async context, otherwise getAsyncContext() will be null
-        final AsyncContext ctx = req.startAsync();
+        NClient.request(new PostRequestBuilder(uri, "Hello") {
+            @Override
+            public void setup(PostRequestBuilder builder) {
 
-        // set the timeout
-        ctx.setTimeout(30000);
-
-        // attach listener to respond to lifecycle events of this AsyncContext
-        ctx.addListener(new AsyncListener() {
-            public void onComplete(AsyncEvent event) throws IOException {
-                _l.info("#onComplete called");
             }
+        }, new PipelineBuilder() {
+            @Override
+            protected void setup(ChannelPipeline pipeline) {
+                pipeline.addLast(new DefaultContentHandler<String, HttpServletResponse>(resp) {
 
-            public void onTimeout(AsyncEvent event) throws IOException {
-                _l.info("#onTimeout called");
-            }
-
-            public void onError(AsyncEvent event) throws IOException {
-                _l.info("#onError called");
-            }
-
-            public void onStartAsync(AsyncEvent event) throws IOException {
-                _l.info("#onStartAsync called");
-            }
-        });
-
-        // spawn some task in a background thread
-        ctx.start(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(2000);
-                    ctx.getResponse().getOutputStream().println(
-                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}] at {1}</h1>\n",
-                            Thread.currentThread().getId(),
-                            System.currentTimeMillis()));
-                    Thread.sleep(1000);
-                    ctx.getResponse().getOutputStream().println(
-                        MessageFormat.format("<h1>another processing at {0}\n",
-                            System.currentTimeMillis()));
-//                    ctx.getResponse().getWriter().write(
-//                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
-//                                    Thread.currentThread().getId()));
-                } catch (IOException e) {
-                    _l.error("#Problem processing task", e);
-                } catch (InterruptedException ie) {
-                    _l.error("#Problem processing task", ie);
-                }
-
-
-                ctx.complete();
+                    @Override
+                    protected String process(String s) {
+                        try {
+                            final PrintWriter w = resp.getWriter();
+                            w.write(s);
+                            w.flush();
+                            w.close();
+                        } catch (IOException e) {
+                            _l.error(e);
+                        }
+                        return s;
+                    }
+                });
             }
         });
-
     }
 
     private static final Logger _l = LogManager.getLogger(AsyncServlet.class);

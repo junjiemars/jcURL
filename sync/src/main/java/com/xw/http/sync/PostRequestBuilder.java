@@ -1,6 +1,10 @@
-package com.xw.http;
+package com.xw.http.sync;
 
+import org.apache.http.Consts;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.util.EntityUtils;
 
 /**
  * Author: junjie
@@ -22,6 +26,10 @@ public abstract class PostRequestBuilder
     @Override
     public HttpPost build() {
         final HttpPost post = new HttpPost(uri);
+        final StringEntity entity = new StringEntity("important message",
+                ContentType.create("plain/text", Consts.UTF_8));
+        entity.setChunked(true);
+        post.setEntity(entity);
         return post;
     }
 }

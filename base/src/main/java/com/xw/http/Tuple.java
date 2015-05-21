@@ -19,7 +19,7 @@ public abstract class Tuple<X, Y, V> {
         return (_y);
     }
 
-    protected abstract V call();
+    public abstract V call();
     protected final X _x;
     protected final Y _y;
 }

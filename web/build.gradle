@@ -22,10 +22,8 @@ def archive_name = 'nio'
 repositories {
     mavenCentral()
     mavenLocal()
-    maven {
-        // netty.io maven repo
-        url "http://clinker.netty.io/nexus/content/repositories/snapshots"
-    }
+//    maven {
+//    }
 }
 
 //jar {
@@ -49,13 +47,10 @@ war {
 }
 
 dependencies {
-//    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile project(':NHttpClient')
+    compile project(':sync')
     compile 'javax.servlet:javax.servlet-api:3.1.0'
-    compile 'org.springframework:spring-webmvc:3.2.13.RELEASE'
-    compile 'org.springframework:spring-context-support:3.2.13.RELEASE'
-    //compile 'org.springframework:spring-web:3.1.0.RELEASE'
-    compile 'org.thymeleaf:thymeleaf:2.1.4.RELEASE'
+    compile 'org.apache.httpcomponents:httpclient:4.4.1'
     compile 'org.apache.logging.log4j:log4j-api:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
     compile 'org.apache.logging.log4j:log4j-web:2.1'
