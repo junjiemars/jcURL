@@ -53,6 +53,8 @@ dependencies {
     compile project(':NHttpClient')
     compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile 'org.springframework:spring-webmvc:3.2.13.RELEASE'
+    compile 'org.springframework:spring-context-support:3.2.13.RELEASE'
+    //compile 'org.springframework:spring-web:3.1.0.RELEASE'
     compile 'org.thymeleaf:thymeleaf:2.1.4.RELEASE'
     compile 'org.apache.logging.log4j:log4j-api:2.1'
     compile 'org.apache.logging.log4j:log4j-core:2.1'
