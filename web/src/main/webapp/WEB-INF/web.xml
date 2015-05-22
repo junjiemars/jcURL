@@ -29,4 +29,14 @@
         <url-pattern>/sync</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>Echo</servlet-name>
+        <servlet-class>com.xw.http.web.EchoServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>Echo</servlet-name>
+        <url-pattern>/echo</url-pattern>
+    </servlet-mapping>
+
 </web-app>
