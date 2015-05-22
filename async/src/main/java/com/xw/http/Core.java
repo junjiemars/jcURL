@@ -185,13 +185,12 @@ public final class Core {
 
                 // default http content processing
                 if (options.body()) {
-                    pipeline.addLast(new DefaultContentHandler<Integer, Integer>() {
+                    pipeline.addLast(new DefaultContentHandler<Integer>() {
                         @Override
-                        protected Integer process(final String s) {
+                        protected void process(final String s) {
                             _l.info(String.format("<BEGIN OF CONTENT:%s>", s.length()));
                             _l.info(s);
                             _l.info("<END OF CONTENT>");
-                            return (s.length());
                         }
                     });
                 }
@@ -242,10 +241,10 @@ public final class Core {
                 }
 
                 // default http content processing
-                pipeline.addLast(new DefaultContentHandler<Integer, Integer>(A.OPTION_BLOCK_SIZE) {
+                pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
                     @Override
-                    protected Integer process(String s) {
-                        if (!options.body()) return (0);
+                    protected void process(String s) {
+                        if (!options.body()) return;
 
                         _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d|#%d>",
                                         H.tid(), s.length(), _sn.getAndIncrement()),
@@ -256,7 +255,6 @@ public final class Core {
                                 A.OPTION_PROMPT_LEN, "="));
 
                         _l.info(String.format("elapsed:%d", System.currentTimeMillis() - begin));
-                        return (s.length());
                     }
                 });
 

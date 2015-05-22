@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
  * Date: 3/5/2015.
  * Target: <>
  */
-public abstract class DefaultContentHandler<R, T>
+public abstract class DefaultContentHandler<T>
         extends SimpleChannelInboundHandler<HttpContent>
         /*implements ReferenceCounted*/ {
 
@@ -63,5 +63,5 @@ public abstract class DefaultContentHandler<R, T>
         }
     }
 
-    protected abstract R process(final String s);
+    protected abstract void process(final String s);
 }

@@ -12,6 +12,7 @@
     <servlet>
         <servlet-name>Async</servlet-name>
         <servlet-class>com.xw.http.web.AsyncServlet</servlet-class>
+        <async-supported>true</async-supported>
     </servlet>
 
     <servlet-mapping>

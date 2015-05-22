@@ -22,13 +22,13 @@ import java.io.IOException;
 public class AsyncServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doGet(req, resp);
         doPost(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
         final AsyncContext async = req.startAsync();
         async.setTimeout(C.http_timeout());
@@ -39,20 +39,23 @@ public class AsyncServlet extends HttpServlet {
             return;
         }
 
-        NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
+        async.start(new Runnable() {
             @Override
-            public void setup(PostRequestBuilder builder) {
-
-            }
-        }, new PipelineBuilder() {
-            @Override
-            protected void setup(ChannelPipeline pipeline) {
-                pipeline.addLast(new DefaultContentHandler<String, AsyncContext>(async) {
+            public void run() {
+                NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
                     @Override
-                    protected String process(String s) {
-                        C.output_str(async.getResponse(), s);
-                        async.complete();
-                        return s;
+                    public void setup(PostRequestBuilder builder) {
+
+                    }
+                }, new PipelineBuilder() {
+                    @Override
+                    protected void setup(ChannelPipeline pipeline) {
+                        pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
+                            @Override
+                            protected void process(String s) {
+                                C.output_str(async.getResponse(), s);
+                            }
+                        });
                     }
                 });
             }
