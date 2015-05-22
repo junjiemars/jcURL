@@ -31,16 +31,15 @@ public class CallingChainTest {
                     public void setup(final ChannelPipeline pipeline) {
                         // default http content processing
 
-                        pipeline.addLast(new DefaultContentHandler<Integer, Integer>(A.OPTION_BLOCK_SIZE) {
+                        pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
-                            protected Integer process(String s) {
+                            protected void process(String s) {
                                 _l.info(H.pad_right(String.format("##<callB|Tid:%d>",
                                         H.tid()), A.OPTION_PROMPT_LEN, "#"));
                                 _l.info(s);
 
                                 // conditioning
                                 callB(s.length(), "http://www.baidu.com", "Welcome", 500);
-                                return (s.length());
                             }
                         });
                     }
@@ -61,14 +60,13 @@ public class CallingChainTest {
                     @Override
                     public void setup(final ChannelPipeline pipeline) {
                         // default http content processing
-                        pipeline.addLast(new DefaultContentHandler<Integer, Integer>(A.OPTION_BLOCK_SIZE) {
+                        pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
                             @Override
-                            protected Integer process(String s) {
+                            protected void process(String s) {
                                 _l.info(H.pad_right(String.format("##<callB|Tid:%d>",
                                         H.tid()), A.OPTION_PROMPT_LEN, "#"));
                                 _l.info(s);
                                 _l.info(String.format("<A:%d+B:%d=%d>", aLen, s.length(), aLen + s.length()));
-                                return (s.length());
                             }
                         });
                     }
