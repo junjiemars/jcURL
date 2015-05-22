@@ -26,7 +26,7 @@ public abstract class PostRequestBuilder
     @Override
     public HttpPost build() {
         final HttpPost post = new HttpPost(uri);
-
+        setup(post);
         return post;
     }
 }
