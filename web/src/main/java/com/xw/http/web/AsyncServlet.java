@@ -18,7 +18,7 @@ import java.io.IOException;
  * Date: 4/28/15.
  * Target: <>
  */
-@WebServlet(value = "/netty", asyncSupported = true)
+@WebServlet(value = "/async", asyncSupported = true)
 public class AsyncServlet extends HttpServlet {
 
     @Override
