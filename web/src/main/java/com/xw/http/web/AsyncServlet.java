@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * Author: junjie
@@ -31,15 +30,16 @@ public class AsyncServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
-        final String uri = System.getProperty("http.url");
+        final AsyncContext async = req.startAsync();
+        async.setTimeout(C.http_timeout());
+
+        final String uri = C.http_url();
         if (H.is_null_or_empty(uri)) {
-            Core.output_str(resp, "<R:ENV:http.url> is null/empty");
+            C.output_str(async.getResponse(), "<R:ENV:http.url> is null/empty");
             return;
         }
-        final AsyncContext async = req.startAsync();
-        async.setTimeout(H.str_to_int(System.getProperty("echo.timeout"), 1000));
 
-        NClient.request(new PostRequestBuilder(uri, Core.get_post_data(req)) {
+        NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
             @Override
             public void setup(PostRequestBuilder builder) {
 
@@ -48,11 +48,10 @@ public class AsyncServlet extends HttpServlet {
             @Override
             protected void setup(ChannelPipeline pipeline) {
                 pipeline.addLast(new DefaultContentHandler<String, AsyncContext>(async) {
-
                     @Override
                     protected String process(String s) {
-                        Core.output_str(_t.getResponse(), s);
-                        _t.complete();
+                        C.output_str(async.getResponse(), s);
+                        async.complete();
                         return s;
                     }
                 });

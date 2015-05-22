@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * Author: junjie
@@ -39,13 +38,13 @@ public class SyncServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
-        final String uri = System.getProperty("http.url");
+        final String uri = C.http_url();
         if (H.is_null_or_empty(uri)) {
-            Core.output_str(resp, "<R:ENV:http.url> is null/empty");
+            C.output_str(resp, "<R:ENV:http.url> is null/empty");
             return;
         }
 
-        final RequestBuilder<HttpPost> requested = new PostRequestBuilder(uri, Core.get_post_data(req)) {
+        final RequestBuilder<HttpPost> requested = new PostRequestBuilder(uri, C.get_post_data(req)) {
             @Override
             public void setup(final HttpPost post) {
                 final StringEntity entity = new StringEntity(content,
@@ -60,12 +59,12 @@ public class SyncServlet extends HttpServlet {
             public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
                 final HttpEntity e = response.getEntity();
                 if (null == e) {
-                    Core.output_str(resp, "<R:Sync:Entity> is null/empty");
+                    C.output_str(resp, "<R:Sync:Entity> is null/empty");
                     return null;
                 }
 
                 final String s = EntityUtils.toString(e);
-                Core.output_str(resp, s);
+                C.output_str(resp, s);
                 return s;
             }
         };

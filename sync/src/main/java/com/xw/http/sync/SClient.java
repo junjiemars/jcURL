@@ -56,21 +56,6 @@ public final class SClient {
         return (false);
     }
 
-    private static URI _to_uri(final String url) {
-        if (H.is_null_or_empty(url)) {
-            _l.warn("<arg:url> is invalid");
-            return (null);
-        }
-
-        try {
-            return (new URI(url));
-        } catch (final URISyntaxException e) {
-            _l.error(e);
-        }
-
-        return (null);
-    }
-
     private static final Logger _l = LogManager.getLogger(SClient.class);
 }
 

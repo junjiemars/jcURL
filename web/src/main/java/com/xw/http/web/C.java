@@ -3,13 +3,13 @@ package com.xw.http.web;
 //import org.springframework.boot.SpringApplication;
 //import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.xw.http.H;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -19,9 +19,11 @@ import java.io.IOException;
  * Target:<>
  */
 //@SpringBootApplication
-public class Core {
+public class C {
+    private C() {}
+
     public static void main(String[] args) {
-//        SpringApplication.run(Core.class, args);
+//        SpringApplication.run(C.class, args);
     }
 
     public static final String get_post_data(final HttpServletRequest req) {
@@ -39,7 +41,7 @@ public class Core {
         return null;
     }
 
-    public static <T extends ServletResponse> void output_str(final T resp, final String s) {
+    public static final <T extends ServletResponse> void output_str(final T resp, final String s) {
         try {
             final ServletOutputStream o = resp.getOutputStream();
             o.println(s);
@@ -50,5 +52,15 @@ public class Core {
         }
     }
 
-    private static final Logger _l = LogManager.getLogger(Core.class);
+    public static final String http_url() {
+        final String s = System.getProperty("http.url");
+        return s;
+    }
+
+    public static final int http_timeout() {
+        final String s = System.getProperty("http.timeout");
+        return (H.str_to_int(s, 3000));
+    }
+
+    private static final Logger _l = LogManager.getLogger(C.class);
 }
