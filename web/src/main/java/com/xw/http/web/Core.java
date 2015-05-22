@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
@@ -38,7 +39,7 @@ public class Core {
         return null;
     }
 
-    public static void output_str(final HttpServletResponse resp, final String s) {
+    public static <T extends ServletResponse> void output_str(final T resp, final String s) {
         try {
             final ServletOutputStream o = resp.getOutputStream();
             o.println(s);

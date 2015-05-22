@@ -5,6 +5,7 @@ import io.netty.channel.ChannelPipeline;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -35,6 +36,8 @@ public class AsyncServlet extends HttpServlet {
             Core.output_str(resp, "<R:ENV:http.url> is null/empty");
             return;
         }
+        final AsyncContext async = req.startAsync();
+        async.setTimeout(H.str_to_int(System.getProperty("echo.timeout"), 1000));
 
         NClient.request(new PostRequestBuilder(uri, Core.get_post_data(req)) {
             @Override
@@ -44,11 +47,12 @@ public class AsyncServlet extends HttpServlet {
         }, new PipelineBuilder() {
             @Override
             protected void setup(ChannelPipeline pipeline) {
-                pipeline.addLast(new DefaultContentHandler<String, HttpServletResponse>(resp) {
+                pipeline.addLast(new DefaultContentHandler<String, AsyncContext>(async) {
 
                     @Override
                     protected String process(String s) {
-                        Core.output_str(resp, s);
+                        Core.output_str(_t.getResponse(), s);
+                        _t.complete();
                         return s;
                     }
                 });
