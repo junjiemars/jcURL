@@ -34,19 +34,8 @@ public class EchoServlet extends HttpServlet {
             _l.error(e);
         }
 
-        final StringBuffer d = new StringBuffer();
-        String line = null;
-        try {
-            final BufferedReader r = req.getReader();
-            while ((line = r.readLine()) != null)
-                d.append(line);
-        } catch (Exception e) {
-            _l.error(e);
-        }
-
-        final PrintWriter w = resp.getWriter();
-        w.write(d.toString());
-        w.close();
+        final String s = Core.get_post_data(req);
+        Core.output_str(resp, s);
     }
 
     private static final Logger _l = LogManager.getLogger(EchoServlet.class);

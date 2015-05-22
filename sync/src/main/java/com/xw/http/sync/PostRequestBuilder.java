@@ -26,10 +26,7 @@ public abstract class PostRequestBuilder
     @Override
     public HttpPost build() {
         final HttpPost post = new HttpPost(uri);
-        final StringEntity entity = new StringEntity("important message",
-                ContentType.create("plain/text", Consts.UTF_8));
-        entity.setChunked(true);
-        post.setEntity(entity);
+
         return post;
     }
 }

@@ -4,11 +4,14 @@ import com.xw.http.H;
 import com.xw.http.sync.PostRequestBuilder;
 import com.xw.http.sync.RequestBuilder;
 import com.xw.http.sync.SClient;
+import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,15 +41,17 @@ public class SyncServlet extends HttpServlet {
 //        super.doPost(req, resp);
         final String uri = System.getProperty("http.url");
         if (H.is_null_or_empty(uri)) {
-            resp.getOutputStream().println("<R:ENV:http.url> is null/empty");
-            resp.getOutputStream().close();
+            Core.output_str(resp, "<R:ENV:http.url> is null/empty");
             return;
         }
 
-        final RequestBuilder<HttpPost> requested = new PostRequestBuilder(uri, "Hello") {
+        final RequestBuilder<HttpPost> requested = new PostRequestBuilder(uri, Core.get_post_data(req)) {
             @Override
             public void setup(final HttpPost post) {
-
+                final StringEntity entity = new StringEntity(content,
+                        ContentType.create("plain/text", Consts.UTF_8));
+                entity.setChunked(true);
+                post.setEntity(entity);
             }
         };
 
@@ -55,15 +60,12 @@ public class SyncServlet extends HttpServlet {
             public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
                 final HttpEntity e = response.getEntity();
                 if (null == e) {
-                    resp.getOutputStream().println("<R:Sync:Entity> is null/empty");
+                    Core.output_str(resp, "<R:Sync:Entity> is null/empty");
                     return null;
                 }
 
                 final String s = EntityUtils.toString(e);
-                final PrintWriter w = resp.getWriter();
-                w.write(s);
-                w.flush();
-                w.close();
+                Core.output_str(resp, s);
                 return s;
             }
         };

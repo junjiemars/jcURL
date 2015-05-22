@@ -32,12 +32,11 @@ public class AsyncServlet extends HttpServlet {
 //        super.doPost(req, resp);
         final String uri = System.getProperty("http.url");
         if (H.is_null_or_empty(uri)) {
-            resp.getOutputStream().println("<R:ENV:http.url> is null/empty");
-            resp.getOutputStream().close();
+            Core.output_str(resp, "<R:ENV:http.url> is null/empty");
             return;
         }
 
-        NClient.request(new PostRequestBuilder(uri, "Hello") {
+        NClient.request(new PostRequestBuilder(uri, Core.get_post_data(req)) {
             @Override
             public void setup(PostRequestBuilder builder) {
 
@@ -49,14 +48,7 @@ public class AsyncServlet extends HttpServlet {
 
                     @Override
                     protected String process(String s) {
-                        try {
-                            final PrintWriter w = resp.getWriter();
-                            w.write(s);
-                            w.flush();
-                            w.close();
-                        } catch (IOException e) {
-                            _l.error(e);
-                        }
+                        Core.output_str(resp, s);
                         return s;
                     }
                 });
