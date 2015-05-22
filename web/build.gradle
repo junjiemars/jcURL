@@ -1,6 +1,10 @@
 buildscript {
     repositories {
         mavenCentral()
+//    maven {
+//       // netty.io maven repo
+//       url "http://clinker.netty.io/nexus/content/repositories/snapshots"
+//    }
         mavenLocal()
     }
 
