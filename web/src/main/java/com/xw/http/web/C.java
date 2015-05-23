@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Author:junjie
@@ -19,7 +20,7 @@ import java.io.IOException;
  * Target:<>
  */
 //@SpringBootApplication
-public class C {
+public final class C {
     private C() {}
 
     public static void main(String[] args) {
@@ -60,6 +61,16 @@ public class C {
     public static final int http_timeout() {
         final String s = System.getProperty("http.timeout");
         return (H.str_to_int(s, 3000));
+    }
+
+    public static final String host_name() {
+        try {
+            final String h = String.format("[%s]", java.net.InetAddress.getLocalHost().getHostName());
+            return h;
+        } catch (UnknownHostException e) {
+            _l.error(e);
+        }
+        return "[host.unknown]";
     }
 
     private static final Logger _l = LogManager.getLogger(C.class);
