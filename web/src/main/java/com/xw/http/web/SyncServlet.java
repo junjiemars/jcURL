@@ -64,7 +64,7 @@ public class SyncServlet extends HttpServlet {
                 }
 
                 final String s = EntityUtils.toString(e);
-                C.output_str(resp, s);
+                C.output_str(resp, s + C.host_name());
                 return s;
             }
         };
