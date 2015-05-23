@@ -55,7 +55,7 @@ public final class C {
             for (String i : s) {
                 o.println(i);
             }
-//            o.flush();
+            o.flush();
 //            o.close();
         } catch (IOException e) {
             _l.error(e);
