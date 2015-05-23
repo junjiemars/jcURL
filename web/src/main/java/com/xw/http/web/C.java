@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.UnknownHostException;
 
 /**
@@ -42,12 +43,18 @@ public final class C {
         return null;
     }
 
-    public static final <T extends ServletResponse> void output_str(final T resp, final String s) {
+    public static final <T extends ServletResponse> void output_str(final T resp, final String... s) {
         try {
-            final ServletOutputStream o = resp.getOutputStream();
-            o.println(s);
-            o.flush();
-            o.close();
+            final PrintWriter w = resp.getWriter();
+            for (String i : s) {
+                w.write(i + '\n');
+            }
+            w.flush();
+            w.close();
+//            final ServletOutputStream o = resp.getOutputStream();
+//            o.println(s);
+//            o.flush();
+//            o.close();
         } catch (IOException e) {
             _l.error(e);
         }
