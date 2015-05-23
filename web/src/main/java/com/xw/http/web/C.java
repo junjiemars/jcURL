@@ -45,14 +45,16 @@ public final class C {
 
     public static final <T extends ServletResponse> void output_str(final T resp, final String... s) {
         try {
-            final PrintWriter w = resp.getWriter();
+//            final PrintWriter w = resp.getWriter();
+//            for (String i : s) {
+//                w.write(i + '\n');
+//            }
+//            w.flush();
+//            w.close();
+            final ServletOutputStream o = resp.getOutputStream();
             for (String i : s) {
-                w.write(i + '\n');
+                o.println(i);
             }
-            w.flush();
-            w.close();
-//            final ServletOutputStream o = resp.getOutputStream();
-//            o.println(s);
 //            o.flush();
 //            o.close();
         } catch (IOException e) {
