@@ -33,7 +33,7 @@ public class EchoServlet extends HttpServlet {
         }
 
         final String s = C.get_post_data(req);
-        C.output_str(resp, s);
+        C.output_str(resp, s + C.host_name());
     }
 
     private static final Logger _l = LogManager.getLogger(EchoServlet.class);
