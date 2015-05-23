@@ -45,17 +45,17 @@ public final class C {
 
     public static final <T extends ServletResponse> void output_str(final T resp, final String... s) {
         try {
-//            final PrintWriter w = resp.getWriter();
-//            for (String i : s) {
-//                w.write(i + '\n');
-//            }
-//            w.flush();
-//            w.close();
-            final ServletOutputStream o = resp.getOutputStream();
+            final PrintWriter w = resp.getWriter();
             for (String i : s) {
-                o.println(i);
+                w.printf("%s\n", i);
             }
-            o.flush();
+            w.flush();
+//            w.close();
+//            final ServletOutputStream o = resp.getOutputStream();
+//            for (String i : s) {
+//                o.println(i);
+//            }
+//            o.flush();
 //            o.close();
         } catch (IOException e) {
             _l.error(e);
