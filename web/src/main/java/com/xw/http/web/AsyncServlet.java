@@ -2,6 +2,7 @@ package com.xw.http.web;
 
 import com.xw.http.*;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,7 +48,7 @@ public class AsyncServlet extends HttpServlet {
                 NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
                     @Override
                     public void setup(PostRequestBuilder builder) {
-
+//                        headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
                     }
                 }, new PipelineBuilder() {
                     @Override
