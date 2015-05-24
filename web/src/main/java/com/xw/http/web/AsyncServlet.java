@@ -39,9 +39,9 @@ public class AsyncServlet extends HttpServlet {
             return;
         }
 
-//        async.start(new Runnable() {
-//            @Override
-//            public void run() {
+        async.start(new Runnable() {
+            @Override
+            public void run() {
                 NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
                     @Override
                     public void setup(PostRequestBuilder builder) {
@@ -54,16 +54,16 @@ public class AsyncServlet extends HttpServlet {
                             @Override
                             protected void process(String s) {
                                 try {
-                                    C.output_str(async.getResponse(), s, C.host_name());
+                                    C.output_str(_t.getResponse(), s, C.host_name());
                                 } finally {
-//                                    async.complete();
+                                    _t.complete();
                                 }
                             }
                         });
                     }
                 });
-//            }
-//        });
+            }
+        });
     }
 
     private static final Logger _l = LogManager.getLogger(AsyncServlet.class);
