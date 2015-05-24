@@ -53,8 +53,11 @@ public class AsyncServlet extends HttpServlet {
                         pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
                             @Override
                             protected void process(String s) {
-                                C.output_str(async.getResponse(), s, C.host_name());
-                                async.complete();
+                                try {
+                                    C.output_str(async.getResponse(), s, C.host_name());
+                                } finally {
+                                    async.complete();
+                                }
                             }
                         });
                     }
