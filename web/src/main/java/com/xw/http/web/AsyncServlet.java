@@ -56,7 +56,7 @@ public class AsyncServlet extends HttpServlet {
                                 try {
                                     C.output_str(_t.getResponse(), s, C.host_name());
                                 } finally {
-                                    _t.complete();
+//                                    _t.complete();
                                 }
                             }
                         });
