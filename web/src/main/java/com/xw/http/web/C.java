@@ -50,7 +50,7 @@ public final class C {
                 w.printf("%s\n", i);
             }
             w.flush();
-//            w.close();
+            w.close();
 //            final ServletOutputStream o = resp.getOutputStream();
 //            for (String i : s) {
 //                o.println(i);

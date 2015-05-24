@@ -31,7 +31,7 @@ public class AsyncServlet extends HttpServlet {
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
         final AsyncContext async = req.startAsync();
-        async.setTimeout(C.http_nio_timeout());
+//        async.setTimeout(C.http_nio_timeout());
 
         final String uri = C.http_url();
         if (H.is_null_or_empty(uri)) {
@@ -39,9 +39,9 @@ public class AsyncServlet extends HttpServlet {
             return;
         }
 
-        async.start(new Runnable() {
-            @Override
-            public void run() {
+//        async.start(new Runnable() {
+//            @Override
+//            public void run() {
                 NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
                     @Override
                     public void setup(PostRequestBuilder builder) {
@@ -56,14 +56,14 @@ public class AsyncServlet extends HttpServlet {
                                 try {
                                     C.output_str(async.getResponse(), s, C.host_name());
                                 } finally {
-                                    async.complete();
+//                                    async.complete();
                                 }
                             }
                         });
                     }
                 });
-            }
-        });
+//            }
+//        });
     }
 
     private static final Logger _l = LogManager.getLogger(AsyncServlet.class);
