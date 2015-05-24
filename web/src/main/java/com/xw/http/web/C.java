@@ -63,16 +63,22 @@ public final class C {
     }
 
     public static final String http_url() {
-        final String s = System.getProperty("http.url");
-        return s;
+        return _http_url;
     }
 
-    public static final int http_timeout() {
-        final String s = System.getProperty("http.timeout");
-        return (H.str_to_int(s, 3000));
+    public static final int http_bio_timeout() {
+        return _http_bio_timeout;
+    }
+
+    public static final int http_nio_timeout() {
+        return _http_nio_timeout;
     }
 
     public static final String host_name() {
+        return _localhost;
+    }
+
+    private static final String _localhost() {
         try {
             final String h = String.format("[%s]", java.net.InetAddress.getLocalHost().getHostName());
             return h;
@@ -81,6 +87,18 @@ public final class C {
         }
         return "[host.unknown]";
     }
+
+    static {
+        _http_bio_timeout = H.str_to_int(System.getProperty("http.bio.timeout"), 1000);
+        _http_nio_timeout = H.str_to_int(System.getProperty("http.nio.timeout"), 1000);
+        _http_url = System.getProperty("http.url");
+        _localhost = _localhost();
+    }
+
+    private static final int _http_bio_timeout;
+    private static final int _http_nio_timeout;
+    private static final String _http_url;
+    private static final String _localhost;
 
     private static final Logger _l = LogManager.getLogger(C.class);
 }

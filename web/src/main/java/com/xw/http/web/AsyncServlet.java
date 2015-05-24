@@ -2,13 +2,10 @@ package com.xw.http.web;
 
 import com.xw.http.*;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +31,7 @@ public class AsyncServlet extends HttpServlet {
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
         final AsyncContext async = req.startAsync();
-        async.setTimeout(C.http_timeout());
+        async.setTimeout(C.http_nio_timeout());
 
         final String uri = C.http_url();
         if (H.is_null_or_empty(uri)) {
@@ -57,6 +54,7 @@ public class AsyncServlet extends HttpServlet {
                             @Override
                             protected void process(String s) {
                                 C.output_str(async.getResponse(), s, C.host_name());
+                                async.complete();
                             }
                         });
                     }
