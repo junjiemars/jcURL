@@ -3,15 +3,13 @@ package com.xw.http.web;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.MessageFormat;
 
 /**
@@ -19,7 +17,7 @@ import java.text.MessageFormat;
  * Date: 4/28/15.
  * Target: <>
  */
-@WebServlet(value = "/async", asyncSupported = true)
+//@WebServlet(urlPatterns = {"/simple"}, asyncSupported = true)
 public class SimpleAsyncServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -58,28 +56,26 @@ public class SimpleAsyncServlet extends HttpServlet {
 
         // spawn some task in a background thread
         ctx.start(new Runnable() {
+            @Override
             public void run() {
                 try {
+                    final PrintWriter o = ctx.getResponse().getWriter();
                     Thread.sleep(2000);
-                    ctx.getResponse().getOutputStream().println(
-                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}] at {1}</h1>\n",
+                    o.write(MessageFormat.format("<h1>Processing task in bgt_id:[{0}] at {1}</h1>\n",
                             Thread.currentThread().getId(),
                             System.currentTimeMillis()));
                     Thread.sleep(1000);
-                    ctx.getResponse().getOutputStream().println(
-                        MessageFormat.format("<h1>another processing at {0}\n",
+                    o.write(MessageFormat.format("<h1>another processing at {0}\n",
                             System.currentTimeMillis()));
-//                    ctx.getResponse().getWriter().write(
-//                            MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
-//                                    Thread.currentThread().getId()));
+                    o.write(MessageFormat.format("<h1>Processing task in bgt_id:[{0}]</h1>\n",
+                            Thread.currentThread().getId()));
+
+                    ctx.complete();
                 } catch (IOException e) {
                     _l.error("#Problem processing task", e);
                 } catch (InterruptedException ie) {
                     _l.error("#Problem processing task", ie);
                 }
-
-
-                ctx.complete();
             }
         });
 

@@ -2,11 +2,13 @@ package com.xw.http.web;
 
 import com.xw.http.*;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +20,7 @@ import java.io.IOException;
  * Date: 4/28/15.
  * Target: <>
  */
-@WebServlet(value = "/async", asyncSupported = true)
+//@WebServlet(urlPatterns = {"/async"}, asyncSupported = true)
 public class AsyncServlet extends HttpServlet {
 
     @Override
@@ -31,7 +33,7 @@ public class AsyncServlet extends HttpServlet {
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
         final AsyncContext async = req.startAsync();
-//        async.setTimeout(C.http_nio_timeout());
+        async.setTimeout(C.http_nio_timeout());
 
         final String uri = C.http_url();
         if (H.is_null_or_empty(uri)) {
@@ -45,7 +47,7 @@ public class AsyncServlet extends HttpServlet {
                 NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
                     @Override
                     public void setup(PostRequestBuilder builder) {
-//                        headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
+                        headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
                     }
                 }, new PipelineBuilder() {
                     @Override
@@ -53,10 +55,14 @@ public class AsyncServlet extends HttpServlet {
                         pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
                             @Override
                             protected void process(String s) {
-                                try {
-                                    C.output_str(_t.getResponse(), s, C.host_name());
-                                } finally {
-//                                    _t.complete();
+                                final ServletResponse r = _t.getResponse();
+                                if (r != null) {
+                                    try {
+                                        r.getWriter().write(s);
+                                        _t.complete();
+                                    } catch (IOException ioe) {
+                                        _l.error(ioe);
+                                    }
                                 }
                             }
                         });
