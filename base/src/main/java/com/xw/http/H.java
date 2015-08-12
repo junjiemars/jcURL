@@ -51,6 +51,10 @@ public final class H {
     public static long tid() {
         return (Thread.currentThread().getId());
     }
+
+    public static final String tn() {
+        return Thread.currentThread().getName();
+    }
 //
 //    public static final <T> boolean is_null_or_empty(final T[] array) {
 //        if (null == array || array.length == 0) {

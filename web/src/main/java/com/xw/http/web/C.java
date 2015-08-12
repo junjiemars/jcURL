@@ -4,8 +4,8 @@ package com.xw.http.web;
 //import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.xw.http.H;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletResponse;
@@ -37,7 +37,7 @@ public final class C {
                 d.append(line);
             return d.toString();
         } catch (Exception e) {
-            _l.error(e);
+            _l.error(e.getMessage(), e);
         }
 
         return null;
@@ -58,7 +58,7 @@ public final class C {
 //            o.flush();
 //            o.close();
         } catch (IOException e) {
-            _l.error(e);
+            _l.error(e.getMessage(), e);
         }
     }
 
@@ -83,7 +83,7 @@ public final class C {
             final String h = String.format("[%s]", java.net.InetAddress.getLocalHost().getHostName());
             return h;
         } catch (UnknownHostException e) {
-            _l.error(e);
+            _l.error(e.getMessage(), e);
         }
         return "[host.unknown]";
     }
@@ -100,5 +100,5 @@ public final class C {
     private static final String _http_url;
     private static final String _localhost;
 
-    private static final Logger _l = LogManager.getLogger(C.class);
+    private static final Logger _l = LoggerFactory.getLogger(C.class);
 }

@@ -47,12 +47,12 @@ public final class NClient {
 
         t.headers().set(HttpHeaderNames.HOST, uri.getHost());
 
-        final EventLoopGroup group = new NioEventLoopGroup();
+//        final EventLoopGroup group = new NioEventLoopGroup();
         try {
             final Bootstrap b = new Bootstrap()
                     .remoteAddress(uri.getHost(), (-1 == uri.getPort() ? 80 : uri.getPort()))
                     .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                    .group(group)
+                    .group(_g)
                     .channel(NioSocketChannel.class)
                     .handler(new ChannelInitializer<NioSocketChannel>() {
                         @Override
@@ -69,7 +69,7 @@ public final class NClient {
         } catch (final Exception e) {
             _l.error(e);
         } finally {
-            group.shutdownGracefully();
+//            group.shutdownGracefully();
         }
 
         return (false);
@@ -90,6 +90,7 @@ public final class NClient {
         return (null);
     }
 
+    private static final EventLoopGroup _g = new NioEventLoopGroup();
     private static final Logger _l = LogManager.getLogger(NClient.class);
 }
 

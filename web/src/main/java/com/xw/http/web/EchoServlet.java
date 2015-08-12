@@ -1,7 +1,8 @@
 package com.xw.http.web;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,12 +29,12 @@ public class EchoServlet extends HttpServlet {
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException e) {
-            _l.error(e);
+            _l.error(e.getMessage(), e);
         }
 
         final String s = C.get_post_data(req);
         C.output_str(resp, s, C.host_name());
     }
 
-    private static final Logger _l = LogManager.getLogger(EchoServlet.class);
+    private static final Logger _l = LoggerFactory.getLogger(EchoServlet.class);
 }

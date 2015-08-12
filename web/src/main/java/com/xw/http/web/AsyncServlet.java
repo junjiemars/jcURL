@@ -3,8 +3,8 @@ package com.xw.http.web;
 import com.xw.http.*;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Author: junjie
@@ -55,13 +56,17 @@ public class AsyncServlet extends HttpServlet {
                         pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
                             @Override
                             protected void process(String s) {
+//                                _l.debug(String.format("#RECV:%d", s.length()));
                                 final ServletResponse r = _t.getResponse();
                                 if (r != null) {
                                     try {
-                                        r.getWriter().write(s);
+                                        final PrintWriter w = r.getWriter();
+                                        w.write(s);
+                                        w.write("\n" + C.host_name()+"\n");
+                                        w.flush();
                                         _t.complete();
                                     } catch (IOException ioe) {
-                                        _l.error(ioe);
+                                        _l.error(ioe.getMessage(), ioe);
                                     }
                                 }
                             }
@@ -72,5 +77,5 @@ public class AsyncServlet extends HttpServlet {
         });
     }
 
-    private static final Logger _l = LogManager.getLogger(AsyncServlet.class);
+    private static final Logger _l = LoggerFactory.getLogger(AsyncServlet.class);
 }

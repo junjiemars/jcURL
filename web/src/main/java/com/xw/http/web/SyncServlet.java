@@ -13,8 +13,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -73,5 +74,5 @@ public class SyncServlet extends HttpServlet {
     }
 
 
-    private static final Logger _l = LogManager.getLogger(SyncServlet.class);
+    private static final Logger _l = LoggerFactory.getLogger(SyncServlet.class);
 }
