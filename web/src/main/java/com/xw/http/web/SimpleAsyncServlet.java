@@ -32,7 +32,7 @@ public class SimpleAsyncServlet extends HttpServlet {
 //        super.doPost(req, resp);
 
         // create the async context, otherwise getAsyncContext() will be null
-        final AsyncContext ctx = req.startAsync();
+        final AsyncContext ctx = req.startAsync(req, resp);
 
         // set the timeout
         ctx.setTimeout(C.http_nio_timeout());

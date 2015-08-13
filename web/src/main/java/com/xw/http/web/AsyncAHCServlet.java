@@ -22,13 +22,13 @@ import java.util.concurrent.Future;
  * Date: 8/11/15.
  * Target: <>
  */
-public class AsyncServlet1  extends HttpServlet {
+public class AsyncAHCServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
 
         //        super.doPost(req, resp);
-        final AsyncContext ctx = req.startAsync();
+        final AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(C.http_nio_timeout());
 
         final String uri = C.http_url();
@@ -38,17 +38,17 @@ public class AsyncServlet1  extends HttpServlet {
             return;
         }
 
+        final AsyncHttpClient ahc = new AsyncHttpClient();
         ctx.start(new Runnable() {
-
             @Override
             public void run() {
-                AsyncHttpClient ahc = new AsyncHttpClient();
-                Future<Response> f = ahc.prepareGet(uri).execute(new AsyncCompletionHandler<Response>() {
+                final Future<Response> f = ahc.prepareGet(uri).execute(new AsyncCompletionHandler<Response>() {
                     @Override
                     public Response onCompleted(Response response) throws Exception {
                         return response;
                     }
                 });
+
                 try {
                     ctx.getResponse().getWriter().write(f.get().getResponseBody().toString());
                     ctx.getResponse().getWriter().write("\n");
@@ -62,5 +62,5 @@ public class AsyncServlet1  extends HttpServlet {
 
     }
 
-    private static final Logger _l = LoggerFactory.getLogger(AsyncServlet1.class);
+    private static final Logger _l = LoggerFactory.getLogger(AsyncAHCServlet.class);
 }
