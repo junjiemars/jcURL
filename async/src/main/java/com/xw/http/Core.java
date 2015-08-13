@@ -8,8 +8,8 @@ import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.cookie.*;
 import io.netty.handler.codec.http.cookie.DefaultCookie;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Date: 3/12/15.
  */
 public final class Core {
-    private static final Logger _l = LogManager.getLogger(Core.class);
+    private static final Logger _l = LoggerFactory.getLogger(Core.class);
 
     private Core() {
     }
@@ -141,7 +141,7 @@ public final class Core {
             try {
                 e.invokeAll(invokes);
             } catch (final InterruptedException ex) {
-                _l.error(ex);
+                _l.error(ex.getMessage(), ex);
             } finally {
                 e.shutdown();
             }
@@ -274,7 +274,7 @@ public final class Core {
         _l.info(H.pad_right(String.format("PWD<Tid:%s>", H.tid()), A.OPTION_PROMPT_LEN, "="));
         _l.info(System.getProperty("user.dir"));
         _l.info(H.pad_right(String.format("OPTIONS<Tid:%s>", H.tid()), A.OPTION_PROMPT_LEN, "="));
-        _l.info(options);
+        _l.info(options.toString());
         _l.info(H.pad_right(String.format("%s<Tid:%d>", options.method(), H.tid()),
                 A.OPTION_PROMPT_LEN, "="));
     }

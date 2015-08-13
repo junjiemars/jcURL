@@ -10,8 +10,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -67,7 +67,7 @@ public final class NClient {
 
             return (true);
         } catch (final Exception e) {
-            _l.error(e);
+            _l.error(e.getMessage(), e);
         } finally {
 //            group.shutdownGracefully();
         }
@@ -84,14 +84,14 @@ public final class NClient {
         try {
             return (new URI(url));
         } catch (final URISyntaxException e) {
-            _l.error(e);
+            _l.error(e.getMessage(), e);
         }
 
         return (null);
     }
 
     private static final EventLoopGroup _g = new NioEventLoopGroup();
-    private static final Logger _l = LogManager.getLogger(NClient.class);
+    private static final Logger _l = LoggerFactory.getLogger(NClient.class);
 }
 
 

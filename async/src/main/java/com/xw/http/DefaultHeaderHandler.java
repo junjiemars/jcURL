@@ -3,8 +3,8 @@ package com.xw.http;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: junjie
@@ -19,5 +19,5 @@ public abstract class DefaultHeaderHandler<T> extends SimpleChannelInboundHandle
 
     protected abstract T process(final HttpResponse response);
 
-    private static final Logger _l = LogManager.getLogger(DefaultHeaderHandler.class);
+    private static final Logger _l = LoggerFactory.getLogger(DefaultHeaderHandler.class);
 }

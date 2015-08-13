@@ -41,40 +41,41 @@ public class AsyncNioServlet extends HttpServlet {
             return;
         }
 
-        async.start(new Runnable() {
+        NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
             @Override
-            public void run() {
-                NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
+            public void setup(PostRequestBuilder builder) {
+                headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
+            }
+        }, new PipelineBuilder() {
+            @Override
+            protected void setup(ChannelPipeline pipeline) {
+                pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
                     @Override
-                    public void setup(PostRequestBuilder builder) {
-                        headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
-                    }
-                }, new PipelineBuilder() {
-                    @Override
-                    protected void setup(ChannelPipeline pipeline) {
-                        pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
-                            @Override
-                            protected void process(String s) {
+                    protected void process(String s) {
 //                                _l.debug(String.format("#RECV:%d", s.length()));
-                                final ServletResponse r = _t.getResponse();
-                                if (r != null) {
-                                    try {
-                                        final PrintWriter w = r.getWriter();
-                                        w.write(s);
-                                        w.write("\n" + C.host_name()+"\n");
-                                        w.flush();
-                                    } catch (IOException ioe) {
-                                        _l.error(ioe.getMessage(), ioe);
-                                    } finally {
-                                        _t.complete();
-                                    }
-                                }
+                        final ServletResponse r = _t.getResponse();
+                        if (r != null) {
+                            try {
+                                final PrintWriter w = r.getWriter();
+                                w.write(s);
+                                w.write("\n" + C.host_name()+"\n");
+                                w.flush();
+                            } catch (IOException ioe) {
+                                _l.error(ioe.getMessage(), ioe);
+                            } finally {
+                                _t.complete();
                             }
-                        });
+                        }
                     }
                 });
             }
         });
+
+//        async.start(new Runnable() {
+//            @Override
+//            public void run() {
+//            }
+//        });
     }
 
     private static final Logger _l = LoggerFactory.getLogger(AsyncNioServlet.class);

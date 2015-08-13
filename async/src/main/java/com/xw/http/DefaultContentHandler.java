@@ -8,8 +8,8 @@ import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.util.CharsetUtil;
 import io.netty.util.ReferenceCountUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: junjie
@@ -20,7 +20,7 @@ public abstract class DefaultContentHandler<T>
         extends SimpleChannelInboundHandler<HttpContent>
         /*implements ReferenceCounted*/ {
 
-    private static final Logger _l = LogManager.getLogger(DefaultContentHandler.class);
+    private static final Logger _l = LoggerFactory.getLogger(DefaultContentHandler.class);
     private final ByteBuf _content;
     protected final T _t;
 
@@ -53,7 +53,7 @@ public abstract class DefaultContentHandler<T>
             try {
                 process(_content.toString(CharsetUtil.UTF_8));
             } catch (final Exception ex) {
-                _l.error(ex);
+                _l.error(ex.getMessage(), ex);
             } finally {
                 ReferenceCountUtil.safeRelease(content.content());
                 content.release();

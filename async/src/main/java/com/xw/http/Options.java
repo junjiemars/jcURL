@@ -3,8 +3,8 @@ package com.xw.http;
 
 import com.google.gson.reflect.TypeToken;
 import io.netty.handler.codec.http.HttpMethod;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.regex.Matcher;
@@ -103,6 +103,6 @@ public final class Options {
         return (data);
     }
 
-    private static final Logger _l = LogManager.getLogger(Options.class);
+    private static final Logger _l = LoggerFactory.getLogger(Options.class);
     private static final Pattern _data_pattern = Pattern.compile("@([\\.\\w\\S]+)");
 }

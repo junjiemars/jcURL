@@ -2,9 +2,9 @@ import com.xw.http.*;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Author: junjie
@@ -73,5 +73,5 @@ public class CallingChainTest {
                 });
     }
 
-    private static final Logger _l = LogManager.getLogger(CallingChainTest.class);
+    private static final Logger _l = LoggerFactory.getLogger(CallingChainTest.class);
 }
