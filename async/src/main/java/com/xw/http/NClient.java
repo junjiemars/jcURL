@@ -2,26 +2,28 @@ package com.xw.http;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Author: junjie
  * Date: 3/5/2015.
  * Target: <>
  */
-public final class NClient {
+public final class NClient  {
     private NClient() {
         // forbidden
     }
@@ -61,9 +63,25 @@ public final class NClient {
                         }
                     });
 
-            final Channel c = b.connect().sync().channel();
-            c.writeAndFlush(t);
-            c.closeFuture().sync();
+            final ChannelFuture f0 = b.connect();
+            f0.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    final Channel c = future.channel();
+                    c.writeAndFlush(t);
+                    c.closeFuture().addListener(new ChannelFutureListener() {
+                        @Override
+                        public void operationComplete(ChannelFuture future) throws Exception {
+                            _l.info("#nested completed event");
+                        }
+                    });
+
+                }
+            });
+
+//            final Channel c = b.connect().sync().channel();
+//            c.writeAndFlush(t);
+//            c.closeFuture().sync();
 
             return (true);
         } catch (final Exception e) {
@@ -77,7 +95,7 @@ public final class NClient {
 
     private static URI _to_uri(final String url) {
         if (H.is_null_or_empty(url)) {
-            _l.warn("<arg:url> is invalid");
+            _l.warn("#arg:url is invalid");
             return (null);
         }
 

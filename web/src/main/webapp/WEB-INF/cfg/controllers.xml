@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="paraMethodResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+        <property name="paramName">
+            <value>method</value>
+        </property>
+        <property name="defaultMethodName">
+            <value>defaultHandle</value>
+        </property>
+    </bean>
+
+    <bean id="resultMsgFormat" class="com.xwtech.bpe.logic.obsh.service.impl.ResultMsgFormatImpl" autowire="byName"></bean>
+
+    <bean name="bpeRequestAction" class="com.xwtech.bpe.web.common.web.controller.BpeRequestAction">
+        <property name="methodNameResolver" ref="paraMethodResolver"/>
+        <property name="actionDispatcher" ref="actionDispatcher"></property>
+    </bean>
+
+    <bean id="actionDispatcher" class="com.xwtech.bpe.framework.service.action.ActionDispatcher" autowire="byName"></bean>
+
+    <bean name="/js_obsh_service/actionDispatcher.do" class="com.xwtech.bpe.web.obsh.web.controller.NewDispatcherAction">
+        <property name="methodNameResolver" ref="paraMethodResolver"/>
+    </bean>
+
+    <bean name="/sms.do" class="com.xwtech.bpe.web.obsh.web.controller.SmsController">
+        <property name="methodNameResolver" ref="paraMethodResolver"/>
+        <property name="whiteSmsNeedDAO" ref="whiteSmsNeedDAO"></property>
+    </bean>
+     <bean name="smsRequestAction" class="com.xwtech.bpe.web.obsh.web.controller.SmsController">
+        <property name="methodNameResolver" ref="paraMethodResolver"/>
+        <property name="whiteSmsNeedDAO" ref="whiteSmsNeedDAO"></property>
+    </bean>
+
+    <bean name="/Download" class="com.xwtech.bpe.web.obsh.web.servlet.download.Download">
+    </bean>
+
+    <!-- 网点用户登录 -->
+    <bean name="/spmLogin.do" class="com.xwtech.bpe.web.obsh.web.controller.SpmLoginController">
+        <property name="methodNameResolver" ref="paraMethodResolver"/>
+        <property name="spmDao" ref="spmDao"></property>
+    </bean>
+
+    <!-- 登陆跳转 139邮箱 -->
+    <bean name="/LoginTran.do" class="com.xwtech.bpe.web.obsh.web.controller.LoginTran">
+        <property name="methodNameResolver" ref="paraMethodResolver"/>
+    </bean>
+       
+	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="userTokenInterceptor" />
+			    <ref bean="marketLoginInterceptor" /> 
+				<ref bean="parametersInterceptor" />
+				<ref bean="marketParametersInterceptor" />
+			</list>
+		</property>
+		<property name="mappings">
+			<props>
+				<!-- 网厅请求处理控制器 -->
+				<prop key="/actionDispatcher.do">bpeRequestAction</prop>
+				<prop key="/sms.do">smsRequestAction</prop>
+
+                <!-- 我的移动请求处理控制器 -->
+                <prop key="/my/actionDispatcher.do">bpeRequestAction</prop>
+				<prop key="/my/sms.do">smsRequestAction</prop>
+                <!-- 文件上传 -->
+                <prop key="/uploadFriend.do">uploadFileController</prop>
+                <prop key="/my/uploadFriend.do">uploadFileController</prop>
+
+                <!-- 营销案请求处理控制器 -->
+                <prop key="/market/actionDispatcher.do">bpeRequestAction</prop>
+                <prop key="/market/sms.do">smsRequestAction</prop>
+
+				<!-- 营销案查询类操作控制器：请求主页面 -->
+				<prop key="/indexPage.do">queryMarketController</prop>
+				<prop key="/market/indexPage.do">queryMarketController</prop>
+
+				<!-- 营销案查询类操作控制器：ajax明细数据请求处理 -->
+				<prop key="/detailData.do">queryMarketController</prop>
+				<prop key="/market/detailData.do">queryMarketController</prop>
+
+				<!-- 营销案查询类操作控制器：ajax营销案参与人数请求处理 -->
+				<prop key="/peopleNum.do">queryMarketController</prop>
+				<prop key="/market/peopleNum.do">queryMarketController</prop>
+				
+				<!-- 营销案查询类操作控制器：ajax营销案协议请求处理 -->
+				<prop key="/agreement.do">queryMarketController</prop>
+				<prop key="/market/agreement.do">queryMarketController</prop>
+
+				<!-- 营销案公共类操作控制器：ajax营销案办理前校验并创建订单号的请求处理 -->
+				<prop key="/createOrder.do">commonServiceMarketController</prop>
+				<prop key="/market/createOrder.do">commonServiceMarketController</prop>
+
+				<!-- 营销案公共类操作控制器：ajax发送验证码请求地址 -->
+				<prop key="/sendCaptcha.do">commonServiceMarketController</prop>
+				<prop key="/market/sendCaptcha.do">commonServiceMarketController</prop>
+
+				<!-- 营销案公共类操作控制器：ajax校验验证码正确性请求地址 -->
+				<prop key="/verifyCaptcha.do">commonServiceMarketController</prop>
+				<prop key="/market/verifyCaptcha.do">commonServiceMarketController</prop>
+
+				<!-- 营销案办理类操作控制器：ajax业务办理请求处理 -->
+				<prop key="/handler.do">handlerMarketController</prop>
+				<prop key="/market/handler.do">handlerMarketController</prop>
+
+				<!-- 营销案对外接口控制器：获取优惠营销案-->
+				<prop key="/queryEnableMarket.do">marketServiceController</prop>
+				<prop key="/market/queryEnableMarket.do">marketServiceController</prop>
+
+				<!-- 营销案对外接口控制器：获取营销案订单（掌厅）-->
+				<prop key="/queryMobileOrder.do">marketServiceController</prop>
+				<prop key="/market/queryMobileOrder.do">marketServiceController</prop>
+
+				<!-- 营销案对外接口控制器：获取营销案已办理人数-->
+				<prop key="/queryPeopleNum.do">marketServiceController</prop>
+				<prop key="/market/queryPeopleNum.do">marketServiceController</prop>
+
+				<!-- 营销案对外接口控制器：查询地区宽带营销案-->
+				<prop key="/queryBroadbandMarket.do">marketServiceController</prop>
+				<prop key="/market/queryBroadbandMarket.do">marketServiceController</prop>
+				
+				<!-- 营销案对外接口控制器：我的移动和网厅调营销案的接口-->
+				<prop key="/queryEnableMarketForCommon.do">marketInterfaceController</prop>
+				<prop key="/market/queryEnableMarketForCommon.do">marketInterfaceController</prop>
+				
+				<!-- 营销案对外接口控制器：我的移动和网厅调营销案的接口-->
+                <prop key="/queryEnableMarketForCommon2.do">marketInterfaceController</prop>
+                <prop key="/market/queryEnableMarketForCommon2.do">marketInterfaceController</prop>
+				
+				<!-- 营销案对外接口控制器：宽带专区宽带列表查询-->
+                <prop key="/queryBroadbandMarketForCommon.do">marketInterfaceController</prop>
+                <prop key="/market/queryBroadbandMarketForCommon.do">marketInterfaceController</prop>
+                
+                <!-- 营销案对外接口控制器：判断指定营销案是否可办理-->
+                <prop key="/queryIsEnabledHandleMarketForCommon.do">marketInterfaceController</prop>
+                <prop key="/market/queryIsEnabledHandleMarketForCommon.do">marketInterfaceController</prop>
+                
+                <!-- 营销案对外接口控制器：查询可办理宽带营销案-->
+                <prop key="/queryEnableBroadbandMarketForCommon.do">marketInterfaceController</prop>
+                <prop key="/market/queryEnableBroadbandMarketForCommon.do">marketInterfaceController</prop>
+                
+                <!-- 营销案对外接口控制器：查询可办理非宽带营销案-->
+                <prop key="/queryEnableNotBroadbandMarketForCommon.do">marketInterfaceController</prop>
+                <prop key="/market/queryEnableNotBroadbandMarketForCommon.do">marketInterfaceController</prop>
+                
+                <!-- 营销案对外接口控制器：查询可办理充值营销案-->
+                <prop key="/queryEnableMoneyMarketForCommon.do">marketInterfaceController</prop>
+                <prop key="/market/queryEnableMoneyMarketForCommon.do">marketInterfaceController</prop>
+                
+                <!-- 套餐理财请求映射地址 -->
+                <prop key="/experience.do">experience</prop>
+                <prop key="/cp_calendar.do">cp_calendar</prop>
+                <prop key="/exp/cp_calendarControllerDYN.do">exp_cp_calendarControllerDYN</prop>
+                <prop key="/exp/cp_queryCenterDYN.do">exp_cp_queryCenterDYN</prop>
+                <prop key="/exp/cp_ExceptionConsumeDYN.do">cp_ExceptionConsumeDYN</prop>
+                <prop key="/exp/cp_dailyDealsDYN.do">exp_cp_dailyDealsDYN</prop>
+                <prop key="/exp/cp_deepQueryDYN.do">exp_cp_deepQueryDYN</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>

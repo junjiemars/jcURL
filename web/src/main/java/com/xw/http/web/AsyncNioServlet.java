@@ -1,6 +1,8 @@
 package com.xw.http.web;
 
 import com.xw.http.*;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import org.slf4j.Logger;
@@ -41,35 +43,51 @@ public class AsyncNioServlet extends HttpServlet {
             return;
         }
 
-        NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
-            @Override
-            public void setup(PostRequestBuilder builder) {
-                headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
-            }
-        }, new PipelineBuilder() {
-            @Override
-            protected void setup(ChannelPipeline pipeline) {
-                pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
-                    @Override
-                    protected void process(String s) {
-//                                _l.debug(String.format("#RECV:%d", s.length()));
-                        final ServletResponse r = _t.getResponse();
-                        if (r != null) {
-                            try {
-                                final PrintWriter w = r.getWriter();
-                                w.write(s);
-                                w.write("\n" + C.host_name()+"\n");
-                                w.flush();
-                            } catch (IOException ioe) {
-                                _l.error(ioe.getMessage(), ioe);
-                            } finally {
-                                _t.complete();
-                            }
-                        }
-                    }
-                });
-            }
-        });
+        try {
+            final NioHttpClient n = new NioHttpClient()
+                    .to(uri)
+                    .post(C.get_post_data(req));
+
+        } catch (Exception e) {
+            _l.error(e.getMessage(), e);
+        }
+
+//
+//        NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
+//            @Override
+//            public void setup(PostRequestBuilder builder) {
+//                headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
+//            }
+//        }, new PipelineBuilder() {
+//            @Override
+//            protected void setup(ChannelPipeline pipeline) {
+//                pipeline.addLast(new DefaultContentHandler<AsyncContext>(async) {
+//                    @Override
+//                    protected void process(String s) {
+////                                _l.debug(String.format("#RECV:%d", s.length()));
+//                        final ServletResponse r = _t.getResponse();
+//                        if (r != null) {
+//                            try {
+//                                final PrintWriter w = r.getWriter();
+//                                w.write(s);
+////                                w.write("\n" + C.host_name()+"\n");
+//                                w.flush();
+//                            } catch (IOException ioe) {
+//                                _l.error(ioe.getMessage(), ioe);
+//                            } finally {
+//                                _t.complete();
+//                            }
+//                        }
+//                    }
+//
+////                    @Override
+////                    protected void complete() {
+////                        _t.complete();
+////                    }
+//
+//                });
+//            }
+//        });
 
 //        async.start(new Runnable() {
 //            @Override

@@ -59,9 +59,13 @@ public abstract class DefaultContentHandler<T>
                 content.release();
                 ctx.close();
                 ReferenceCountUtil.safeRelease(_content);
+//                complete();
             }
         }
     }
 
     protected abstract void process(final String s);
+//    protected void complete() {
+//
+//    }
 }
