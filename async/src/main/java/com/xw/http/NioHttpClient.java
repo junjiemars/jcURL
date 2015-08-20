@@ -5,10 +5,9 @@ import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.HttpClientCodec;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpContentDecompressor;
-import io.netty.handler.codec.http.HttpObject;
+import io.netty.handler.codec.http.*;
+import io.netty.util.AsciiString;
+import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import org.slf4j.Logger;
@@ -16,79 +15,132 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.security.InvalidParameterException;
+import java.util.concurrent.Executors;
 
 /**
  * Created by junjie on 8/17/15.
  */
-public final class NioHttpClient<N extends NioHttpClient<N, O, I>, O, I>  /*implements Closeable*/ {
+public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiver>  /*implements Closeable*/ {
 
-    private final Bootstrap b;
+    private final Bootstrap _b;
+    private final EventLoopGroup _g;
+    private URI _uri;
+    private DefaultFullHttpRequest _req;
+    private Charset _cs;
+
 
     public NioHttpClient() {
-        b = new Bootstrap()
-                .group(_g)
+        _b = new Bootstrap()
+                .group(_g = new NioEventLoopGroup(4))
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .channel(NioSocketChannel.class);
+
     }
 
-    public final N to(final String url) throws URISyntaxException {
-        final URI uri = new URI(url);
-        b.remoteAddress(uri.getHost(), (-1 == uri.getPort()) ? 80 : uri.getPort())
+    public N to(final String uri) throws URISyntaxException {
+        _uri = new URI(uri);
+        _b
+                .remoteAddress(_uri.getHost(), (-1 == _uri.getPort()) ? 80 : _uri.getPort())
                 .handler(new ChannelInitializer<NioSocketChannel>() {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new HttpClientCodec())
-                                .addLast(new HttpContentDecompressor())
-                                .addLast(new SimpleChannelInboundHandler<HttpObject>() {
-                                    @Override
-                                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                                        super.exceptionCaught(ctx, cause);
-                                        _l.error(cause.toString());
-                                    }
-
-                                    @Override
-                                    protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
-                                        _l.info(msg.toString());
-                                    }
-                                });
+                        ch.pipeline()
+                                .addLast(new HttpClientCodec())
+                                .addLast(new HttpContentDecompressor());
                     }
                 });
-        return (N)this;
+
+        return (N) this;
     }
 
-    public final N post(final O out) throws InterruptedException {
+    public final N post(final String out) throws InterruptedException {
+        return post(out, CharsetUtil.UTF_8, "*/*");
+    }
 
-        b.connect().addListener(new ChannelFutureListener() {
+    public final N post(final String out, final Charset charset, final String accept) {
+        _req = new DefaultFullHttpRequest(
+                HttpVersion.HTTP_1_1, HttpMethod.POST, _uri.toString(),
+                PooledByteBufAllocator.DEFAULT.buffer().writeBytes(out.getBytes(_cs = charset)));
+        _req.headers()
+                .set(HttpHeaderNames.ACCEPT_CHARSET, _cs)
+                .set(HttpHeaderNames.USER_AGENT, _ua)
+                .set(HttpHeaderNames.ACCEPT, new AsciiString(accept))
+                .set(HttpHeaderNames.CONTENT_LENGTH, _req.content().readableBytes())
+                .set(HttpHeaderNames.HOST, _uri.getHost())
+        ;
+
+        return (N) this;
+    }
+
+    public final N onReceive(final R in) throws InvalidParameterException, IllegalStateException, InterruptedException {
+        if (null == in) {
+            throw new InvalidParameterException("#R:in is invalid");
+        }
+        if (null == _uri || null == _req) {
+            throw new IllegalStateException("#check calling order: to()->post()->onReceive()");
+        }
+
+        final StringBuilder buffer = new StringBuilder();
+
+        _b.connect().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                future.channel().writeAndFlush(out);
+                future.channel().writeAndFlush(_req);
             }
-        }).sync();
-//                .channel().closeFuture().addListener(new ChannelFutureListener() {
-//            @Override
-//            public void operationComplete(ChannelFuture future) throws Exception {
-//                _l.info(future.toString());
-//            }
-//        }).sync();
+        }).channel().pipeline().addLast(new SimpleChannelInboundHandler<HttpObject>() {
+            @Override
+            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                super.exceptionCaught(ctx, cause);
+            }
 
-        return (N)this;
+            @Override
+            protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
+                if (msg instanceof HttpResponse) {
+                    final HttpResponse response = (HttpResponse) msg;
+                    _l.debug(response.toString());
+                }
+
+                if (msg instanceof HttpContent) {
+
+                    final HttpContent c = (HttpContent) msg;
+
+                    if (in.progressive()) {
+                        in.onReceive(c.content().toString(_cs));
+                    } else {
+                        buffer.append(c.content().toString(_cs));
+                    }
+
+                    if (c instanceof LastHttpContent) {
+                        if (!in.progressive()) {
+                            in.onReceive(buffer.toString());
+                        }
+                        ctx.close();
+                    }
+
+                }
+            }
+        }).channel().closeFuture().addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                _g.shutdownGracefully();
+                in.onDone();
+            }
+        });
+        return (N) this;
     }
 
-    public final N onReceive(final I in) {
-        return (N)this;
-    }
-
-    public abstract class Receiver<I> {
-        abstract void onReceive(final I in);
-    }
 
 //    @Override
 //    public void close() throws IOException {
 //
 //    }
 
-    private final static EventLoopGroup _g = new NioEventLoopGroup();
+//    private final static EventLoopGroup _g = new NioEventLoopGroup(4*2);
     private final static EventExecutorGroup _e = new DefaultEventExecutorGroup(16);
+    private final static AsciiString _ua = new AsciiString("NioHttpClient");
+
 
     private final static Logger _l = LoggerFactory.getLogger(NioHttpClient.class);
 }
