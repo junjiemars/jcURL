@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiver>  /*implements Closeable*/ {
 
     private final Bootstrap _b;
-    private final EventLoopGroup _g;
+    //    private final EventLoopGroup _g;
     private URI _uri;
     private DefaultFullHttpRequest _req;
     private Charset _cs;
@@ -33,7 +33,7 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
 
     public NioHttpClient() {
         _b = new Bootstrap()
-                .group(_g = new NioEventLoopGroup(4))
+                .group(_g/* = new NioEventLoopGroup(4)*/)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .channel(NioSocketChannel.class);
 
@@ -43,15 +43,7 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
         _uri = new URI(uri);
         _b
                 .remoteAddress(_uri.getHost(), (-1 == _uri.getPort()) ? 80 : _uri.getPort())
-                .handler(new ChannelInitializer<NioSocketChannel>() {
-                    @Override
-                    protected void initChannel(NioSocketChannel ch) throws Exception {
-                        ch.pipeline()
-                                .addLast(new HttpClientCodec())
-                                .addLast(new HttpContentDecompressor());
-                    }
-                });
-
+        ;
         return (N) this;
     }
 
@@ -84,47 +76,120 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
 
         final StringBuilder buffer = new StringBuilder();
 
-        _b.connect().addListener(new ChannelFutureListener() {
+        _b.handler(new ChannelInitializer<NioSocketChannel>() {
+            @Override
+            protected void initChannel(NioSocketChannel ch) throws Exception {
+                ch.pipeline()
+                        .addLast(HttpClientCodec.class.getSimpleName(), new HttpClientCodec())
+                        .addLast(HttpContentDecompressor.class.getSimpleName(), new HttpContentDecompressor())
+                        .addLast(SimpleChannelInboundHandler.class.getSimpleName(),
+                                new SimpleChannelInboundHandler<HttpContent>() {
+                                    @Override
+                                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                                        _l.error(cause.getMessage(), cause);
+                                        ctx.close();
+                                    }
+
+                                    @Override
+                                    protected void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws Exception {
+//                                        for (String n : ctx.pipeline().names()) {
+//                                            _l.debug("#handler-name:{}", n);
+//                                        }
+//                                        _l.debug("#------------------------------");
+
+                                        if (msg instanceof HttpResponse) {
+                                            final HttpResponse response = (HttpResponse) msg;
+                                            _l.debug(response.toString());
+                                        }
+
+                                        if (in.progressive()) {
+                                            in.onReceive(msg.content().toString(_cs));
+                                        } else {
+                                            buffer.append(msg.content().toString(_cs));
+                                        }
+
+                                        if (msg instanceof LastHttpContent) {
+                                            if (!in.progressive()) {
+                                                in.onReceive(buffer.toString());
+                                            }
+                                            ctx.close();
+                                        }
+
+                                    }
+                                });
+            }
+        })
+
+                .connect().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 future.channel().writeAndFlush(_req);
             }
-        }).channel().pipeline().addLast(new SimpleChannelInboundHandler<HttpObject>() {
-            @Override
-            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                super.exceptionCaught(ctx, cause);
-            }
+        })
 
-            @Override
-            protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
-                if (msg instanceof HttpResponse) {
-                    final HttpResponse response = (HttpResponse) msg;
-                    _l.debug(response.toString());
-                }
+//                .channel().pipeline().addLast(SimpleChannelInboundHandler.class.getSimpleName(),
+//                new SimpleChannelInboundHandler<HttpContent>() {
+//            @Override
+//            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+////                super.exceptionCaught(ctx, cause);
+//                _l.error(cause.getMessage(), cause);
+//                ctx.close();
+//            }
+//
+//            @Override
+//            protected void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws Exception {
+//                _l.debug("#------------------------------");
+//                for (String n : ctx.pipeline().names()) {
+//                    _l.debug("#handler-name:{}", n);
+//                }
+//                _l.debug("#------------------------------");
+//
+//                if (msg instanceof HttpResponse) {
+//                    final HttpResponse response = (HttpResponse) msg;
+//                    _l.debug(response.toString());
+//                }
+//
+//                if (in.progressive()) {
+//                    in.onReceive(msg.content().toString(_cs));
+//                } else {
+//                    buffer.append(msg.content().toString(_cs));
+//                }
+//
+//                if (msg instanceof LastHttpContent) {
+//                    if (!in.progressive()) {
+//                        in.onReceive(buffer.toString());
+//                    }
+//                    ctx.close();
+//                }
+//
+//
+////                if (msg instanceof HttpContent) {
+////
+////                    final HttpContent c = (HttpContent) msg;
+////
+////                    if (in.progressive()) {
+////                        in.onReceive(c.content().toString(_cs));
+////                    } else {
+////                        buffer.append(c.content().toString(_cs));
+////                    }
+////
+////                    if (c instanceof LastHttpContent) {
+////                        if (!in.progressive()) {
+////                            in.onReceive(buffer.toString());
+////                        }
+////
+////                        ctx.close();
+////                    }
+////
+////                }
+//            }
+//        })
 
-                if (msg instanceof HttpContent) {
-
-                    final HttpContent c = (HttpContent) msg;
-
-                    if (in.progressive()) {
-                        in.onReceive(c.content().toString(_cs));
-                    } else {
-                        buffer.append(c.content().toString(_cs));
-                    }
-
-                    if (c instanceof LastHttpContent) {
-                        if (!in.progressive()) {
-                            in.onReceive(buffer.toString());
-                        }
-                        ctx.close();
-                    }
-
-                }
-            }
-        }).channel().closeFuture().addListener(new ChannelFutureListener() {
+                .channel().closeFuture().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-                _g.shutdownGracefully();
+//                _g.shutdownGracefully();
+
                 in.onDone();
             }
         });
@@ -137,7 +202,7 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
 //
 //    }
 
-//    private final static EventLoopGroup _g = new NioEventLoopGroup(4*2);
+    private final static EventLoopGroup _g = new NioEventLoopGroup();
     private final static EventExecutorGroup _e = new DefaultEventExecutorGroup(16);
     private final static AsciiString _ua = new AsciiString("NioHttpClient");
 

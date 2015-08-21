@@ -33,5 +33,8 @@
     <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpclient:4.4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.apache.httpcomponents:httpcore:4.4.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: commons-codec:commons-codec:1.9" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.logging.log4j:log4j-web:2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.logging.log4j:log4j-api:2.1" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: org.apache.logging.log4j:log4j-core:2.1" level="project" />
   </component>
 </module>
