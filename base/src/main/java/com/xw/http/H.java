@@ -44,7 +44,7 @@ public final class H {
         return (s.concat(p));
     }
 
-    public static boolean is_null_or_empty(final String s) {
+    public static boolean is_null_or_empty(final CharSequence s) {
         return (null == s || s.length() == 0);
     }
 

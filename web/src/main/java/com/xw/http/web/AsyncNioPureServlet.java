@@ -20,8 +20,8 @@ public class AsyncNioPureServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
-        final AsyncContext async = req.startAsync(req, resp);
-        async.setTimeout(C.http_nio_timeout());
+        final AsyncContext ctx = req.startAsync(req, resp);
+        ctx.setTimeout(C.http_nio_timeout());
 
         final String uri = C.http_url();
         if (H.is_null_or_empty(uri)) {
@@ -33,24 +33,22 @@ public class AsyncNioPureServlet extends HttpServlet {
             final NioHttpClient n = new NioHttpClient()
                     .to(uri)
                     .post(C.get_post_data(req))
-                    .onReceive(new Receiver(false) {
+                    .onReceive(new Receiver() {
                         @Override
-                        public void onReceive(String s) {
+                        public void onReceive(final String s) {
 //                            _l.debug(s);
-                            try {
-
-                                async.getResponse().getWriter().write(s);
-                                async.getResponse().getWriter().flush();
-
-                            } catch (IOException ioe) {
-                                _l.error(ioe.getMessage(), ioe);
-                            }
-                        }
-
-                        @Override
-                        public void onDone() {
-                            _l.debug("#completed nio call");
-                            async.complete();
+//                            ctx.start(new Runnable() {
+//                                @Override
+//                                public void run() {
+                                    try {
+                                        ctx.getResponse().getWriter().write(s);
+                                    } catch (Exception e) {
+                                        _l.error(e.getMessage(), e);
+                                    } finally {
+                                        ctx.complete();
+                                    }
+//                                }
+//                            });
                         }
                     });
 
@@ -60,5 +58,6 @@ public class AsyncNioPureServlet extends HttpServlet {
         }
 
     }
+
     private static final Logger _l = LoggerFactory.getLogger(AsyncNioPureServlet.class);
 }
