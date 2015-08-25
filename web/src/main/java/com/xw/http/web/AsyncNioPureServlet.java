@@ -12,14 +12,53 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by junjie on 8/18/15.
  */
 public class AsyncNioPureServlet extends HttpServlet {
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.doGet(req, resp);
+
+        final AsyncContext ctx = req.startAsync(req, resp);
+        ctx.setTimeout(C.http_nio_timeout());
+
+        final String uri = C.http_url();
+        if (H.is_null_or_empty(uri)) {
+            _l.info("#%s:<ENV:http.url> is null/empty", AsyncNioServlet.class.getSimpleName());
+            return;
+        }
+
+        try {
+            final NioHttpClient n = new NioHttpClient()
+                    .to(uri)
+                    .get()
+                    .onReceive(new Receiver() {
+                        @Override
+                        public void onReceive(final String s) {
+//                            _l.debug(s);
+                            try {
+                                ctx.getResponse().getWriter().write(s);
+                            } catch (Exception e) {
+                                _l.error(e.getMessage(), e);
+                            } finally {
+                                ctx.complete();
+                            }
+                        }
+                    });
+
+        } catch (Exception e) {
+            _l.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        super.doPost(req, resp);
+        super.doPost(req, resp);
+
         final AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(C.http_nio_timeout());
 
@@ -37,21 +76,15 @@ public class AsyncNioPureServlet extends HttpServlet {
                         @Override
                         public void onReceive(final String s) {
 //                            _l.debug(s);
-//                            ctx.start(new Runnable() {
-//                                @Override
-//                                public void run() {
-                                    try {
-                                        ctx.getResponse().getWriter().write(s);
-                                    } catch (Exception e) {
-                                        _l.error(e.getMessage(), e);
-                                    } finally {
-                                        ctx.complete();
-                                    }
-//                                }
-//                            });
+                            try {
+                                ctx.getResponse().getWriter().write(s);
+                            } catch (Exception e) {
+                                _l.error(e.getMessage(), e);
+                            } finally {
+                                ctx.complete();
+                            }
                         }
                     });
-
 
         } catch (Exception e) {
             _l.error(e.getMessage(), e);

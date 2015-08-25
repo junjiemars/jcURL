@@ -49,12 +49,13 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
     }
 
     public final N get(final Charset charset, final String accept) {
-        _req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, _uri.toString());
+        _req = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, _uri.getRawPath());
         _req.headers()
-                .set(HttpHeaderNames.ACCEPT_CHARSET, _cs)
+                .set(HttpHeaderNames.ACCEPT_CHARSET, _cs = charset)
                 .set(HttpHeaderNames.USER_AGENT, _ua)
                 .set(HttpHeaderNames.ACCEPT, new AsciiString(accept))
-                .set(HttpHeaderNames.HOST, _uri.getHost());
+                .set(HttpHeaderNames.HOST, _uri.getHost())
+                .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
 
         return (N) this;
     }
@@ -73,7 +74,7 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
         }
 
         _req = new DefaultFullHttpRequest(
-                HttpVersion.HTTP_1_1, HttpMethod.POST, _uri.toString(),
+                HttpVersion.HTTP_1_1, HttpMethod.POST, _uri.getRawPath(),
                 PooledByteBufAllocator.DEFAULT.buffer().writeBytes(out.getBytes(_cs = charset)));
 
         _req.headers()
@@ -82,7 +83,7 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
                 .set(HttpHeaderNames.ACCEPT, new AsciiString(accept))
                 .set(HttpHeaderNames.CONTENT_LENGTH, _req.content().readableBytes())
                 .set(HttpHeaderNames.HOST, _uri.getHost())
-//                .set(HttpHeaderNames.CONNECTION, "keep-alive")
+//                .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
         ;
 
         return (N) this;

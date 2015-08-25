@@ -54,6 +54,26 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>AsyncPurePooled</servlet-name>
+        <servlet-class>com.xw.http.web.AsyncNioPurePooledServlet</servlet-class>
+        <async-supported>true</async-supported>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AsyncPurePooled</servlet-name>
+        <url-pattern>/pooled</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AsyncPureContained</servlet-name>
+        <servlet-class>com.xw.http.web.AsyncNioPureContainedServlet</servlet-class>
+        <async-supported>true</async-supported>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AsyncPureContained</servlet-name>
+        <url-pattern>/contained</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>AsyncAHC</servlet-name>
         <servlet-class>com.xw.http.web.AsyncAHCServlet</servlet-class>
         <async-supported>true</async-supported>
