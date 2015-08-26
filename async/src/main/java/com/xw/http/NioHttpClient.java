@@ -2,6 +2,7 @@ package com.xw.http;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -20,7 +21,7 @@ import java.security.InvalidParameterException;
 /**
  * Created by junjie on 8/17/15.
  */
-public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiver>  /*implements Closeable*/ {
+public final class NioHttpClient<N extends NioHttpClient<N> >  {
 
     private final Bootstrap _b;
     //    private final EventLoopGroup _g;
@@ -55,27 +56,27 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
                 .set(HttpHeaderNames.USER_AGENT, _ua)
                 .set(HttpHeaderNames.ACCEPT, new AsciiString(accept))
                 .set(HttpHeaderNames.HOST, _uri.getHost())
-                .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+//                .set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+        ;
 
         return (N) this;
     }
 
-    public final N post(final String out) throws InvalidParameterException {
-        if (H.is_null_or_empty(out)) {
-            throw new InvalidParameterException("#String:<out> is invalid");
-        }
-
+    public final N post(final String out)  {
         return post(out, CharsetUtil.UTF_8, "*/*");
     }
 
-    public final N post(final String out, final Charset charset, final String accept) throws InvalidParameterException {
+    public final N post(final String out, final Charset charset, final String accept) {
         if (H.is_null_or_empty(out)) {
-            throw new InvalidParameterException("#String:<out> is invalid");
+            _l.warn("#String:<out> is empty or null");
         }
 
+        _cs = charset;
         _req = new DefaultFullHttpRequest(
                 HttpVersion.HTTP_1_1, HttpMethod.POST, _uri.getRawPath(),
-                PooledByteBufAllocator.DEFAULT.buffer().writeBytes(out.getBytes(_cs = charset)));
+                H.is_null_or_empty(out)
+                ? Unpooled.buffer(0)
+                : PooledByteBufAllocator.DEFAULT.buffer().writeBytes(out.getBytes(_cs)));
 
         _req.headers()
                 .set(HttpHeaderNames.ACCEPT_CHARSET, _cs)
@@ -103,7 +104,7 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
         return (N) this;
     }
 
-    public final N onReceive(final R in) throws InvalidParameterException, IllegalStateException, InterruptedException {
+    public final <R extends Receiver> N onReceive(final R in) throws InvalidParameterException, IllegalStateException, InterruptedException {
         if (null == in) {
             throw new InvalidParameterException("#R:<in> is invalid");
         }
@@ -129,10 +130,10 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
 
                                     @Override
                                     protected void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws Exception {
-//                                        for (String n : ctx.pipeline().names()) {
-//                                            _l.debug("#handler-name:{}", n);
-//                                        }
-//                                        _l.debug("#------------------------------");
+                                        for (String n : ctx.pipeline().names()) {
+                                            _l.debug("#handler-name:{}", n);
+                                        }
+                                        _l.debug("#------------------------------");
 
                                         if (msg instanceof HttpResponse) {
                                             final HttpResponse response = (HttpResponse) msg;
@@ -162,14 +163,15 @@ public final class NioHttpClient<N extends NioHttpClient<N, R>, R extends Receiv
                 in.onReceive(buffer.toString());
             }
         });
+
         return (N) this;
     }
 
-
-//    @Override
-//    public void close() throws IOException {
-//
-//    }
+    public static final void release() {
+        if (_g != null) {
+            _g.shutdownGracefully();
+        }
+    }
 
     // The default nThreads for EventLoopGroup is 2*Runtime.getRuntime().availableProcessors()
     private final static EventLoopGroup _g = new NioEventLoopGroup(/*Runtime.getRuntime().availableProcessors()*/);

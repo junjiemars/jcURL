@@ -3,6 +3,8 @@ package com.xw.http.web;
 import com.xw.http.H;
 import com.xw.http.NioHttpClient;
 import com.xw.http.Receiver;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ import java.util.concurrent.Executors;
 public class AsyncNioPureServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+//        super.doGet(req, resp);
 
         final AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(C.http_nio_timeout());
@@ -36,7 +38,10 @@ public class AsyncNioPureServlet extends HttpServlet {
             final NioHttpClient n = new NioHttpClient()
                     .to(uri)
                     .get()
-                    .onReceive(new Receiver() {
+                    .headers(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
+                    // override previous header setting
+                    .headers(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
+                    .onReceive(new Receiver<String>() {
                         @Override
                         public void onReceive(final String s) {
 //                            _l.debug(s);
@@ -57,7 +62,7 @@ public class AsyncNioPureServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+//        super.doPost(req, resp);
 
         final AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(C.http_nio_timeout());
@@ -72,7 +77,7 @@ public class AsyncNioPureServlet extends HttpServlet {
             final NioHttpClient n = new NioHttpClient()
                     .to(uri)
                     .post(C.get_post_data(req))
-                    .onReceive(new Receiver() {
+                    .onReceive(new Receiver<String>() {
                         @Override
                         public void onReceive(final String s) {
 //                            _l.debug(s);

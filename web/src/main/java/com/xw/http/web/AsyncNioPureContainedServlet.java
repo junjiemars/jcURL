@@ -18,8 +18,14 @@ import java.io.IOException;
  */
 public final class AsyncNioPureContainedServlet extends HttpServlet {
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        super.doGet(req, resp);
+        doPost(req, resp);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+//        super.doPost(req, resp);
 
         final AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(C.http_nio_timeout());
@@ -34,7 +40,7 @@ public final class AsyncNioPureContainedServlet extends HttpServlet {
             final NioHttpClient n = new NioHttpClient()
                     .to(uri)
                     .post(C.get_post_data(req))
-                    .onReceive(new Receiver() {
+                    .onReceive(new Receiver<String>() {
                         @Override
                         public void onReceive(final String s) {
 //                            _l.debug(s);

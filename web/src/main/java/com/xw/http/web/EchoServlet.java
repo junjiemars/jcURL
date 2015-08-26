@@ -24,7 +24,8 @@ public class EchoServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //super.doPost(req, resp);
+//        super.doPost(req, resp); Http 1.1/405
+
         final int timeout = C.http_bio_timeout()/2;
         try {
             Thread.sleep(timeout);
