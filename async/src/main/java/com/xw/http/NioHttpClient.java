@@ -120,33 +120,35 @@ public final class NioHttpClient<N extends NioHttpClient<N> >  {
                 ch.pipeline()
                         .addLast(HttpClientCodec.class.getSimpleName(), new HttpClientCodec())
                         .addLast(HttpContentDecompressor.class.getSimpleName(), new HttpContentDecompressor())
-                        .addLast(SimpleChannelInboundHandler.class.getSimpleName(),
-                                new SimpleChannelInboundHandler<HttpContent>() {
+                        .addLast(_default_http_response_handler_name,
+                                new SimpleChannelInboundHandler<DefaultHttpResponse>() {
                                     @Override
-                                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                                        _l.error(cause.getMessage(), cause);
-                                        ctx.close();
+                                    protected void channelRead0(ChannelHandlerContext ctx, DefaultHttpResponse msg) throws Exception {
+                                        _l.debug(msg.toString());
                                     }
+                                })
+                        .addLast(_http_content_handler_name,
+                        new SimpleChannelInboundHandler<HttpContent>() {
+                            @Override
+                            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                                _l.error(cause.getMessage(), cause);
+                                ctx.close();
+                            }
 
-                                    @Override
-                                    protected void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws Exception {
-                                        for (String n : ctx.pipeline().names()) {
-                                            _l.debug("#handler-name:{}", n);
-                                        }
-                                        _l.debug("#------------------------------");
+                            @Override
+                            protected void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws Exception {
+//                                for (String n : ctx.pipeline().names()) {
+//                                    _l.debug("#handler-name:{}", n);
+//                                }
+//                                _l.debug("#------------------------------");
 
-                                        if (msg instanceof HttpResponse) {
-                                            final HttpResponse response = (HttpResponse) msg;
-                                            _l.debug(response.toString());
-                                        }
+                                buffer.append(msg.content().toString(_cs));
 
-                                        buffer.append(msg.content().toString(_cs));
-
-                                        if (msg instanceof LastHttpContent) {
-                                            ctx.close();
-                                        }
-                                    }
-                                });
+                                if (msg instanceof LastHttpContent) {
+                                    ctx.close();
+                                }
+                            }
+                        });
             }
         })
 
@@ -160,6 +162,7 @@ public final class NioHttpClient<N extends NioHttpClient<N> >  {
                 .channel().closeFuture().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
+                _l.info("#read completed");
                 in.onReceive(buffer.toString());
             }
         });
@@ -180,6 +183,15 @@ public final class NioHttpClient<N extends NioHttpClient<N> >  {
 
     private final static AsciiString _ua = new AsciiString("NioHttpClient");
 
+    private final static String _default_http_response_handler_name =
+            String.format("%s<%s>",
+                    SimpleChannelInboundHandler.class.getSimpleName(),
+                    DefaultHttpResponse.class.getSimpleName());
+
+    private final static String _http_content_handler_name =
+            String.format("%s<%s>",
+                    SimpleChannelInboundHandler.class.getSimpleName(),
+                    HttpContent.class.getSimpleName());
 
     private final static Logger _l = LoggerFactory.getLogger(NioHttpClient.class);
 }
