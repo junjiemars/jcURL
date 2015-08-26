@@ -41,7 +41,7 @@ public class SyncServlet extends HttpServlet {
 //        super.doPost(req, resp);
         final String uri = C.http_url();
         if (H.is_null_or_empty(uri)) {
-            C.output_str(resp, "<R:ENV:http.url> is null/empty");
+            _l.info("<R:ENV:http.url> is null/empty");
             return;
         }
 
@@ -60,12 +60,19 @@ public class SyncServlet extends HttpServlet {
             public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
                 final HttpEntity e = response.getEntity();
                 if (null == e) {
-                    C.output_str(resp, "<R:Sync:Entity> is null/empty");
+                    _l.warn("<R:Sync:Entity> is null/empty");
                     return null;
                 }
 
                 final String s = EntityUtils.toString(e);
-                C.output_str(resp, s, C.host_name());
+
+                try {
+                    resp.getWriter().write(s);
+                    resp.getWriter().flush();
+                    resp.getWriter().close();
+                } catch (Exception ex) {
+                    _l.error(ex.getMessage(), ex);
+                }
                 return s;
             }
         };

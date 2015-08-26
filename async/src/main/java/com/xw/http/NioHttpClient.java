@@ -123,6 +123,11 @@ public final class NioHttpClient<N extends NioHttpClient<N> >  {
                         .addLast(_default_http_response_handler_name,
                                 new SimpleChannelInboundHandler<DefaultHttpResponse>() {
                                     @Override
+                                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                                        _l.error(cause.getMessage(), cause);
+                                    }
+
+                                    @Override
                                     protected void channelRead0(ChannelHandlerContext ctx, DefaultHttpResponse msg) throws Exception {
                                         _l.debug(msg.toString());
                                     }
