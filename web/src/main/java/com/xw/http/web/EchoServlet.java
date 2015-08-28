@@ -1,6 +1,7 @@
 package com.xw.http.web;
 
 
+import com.xw.http.H;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +30,14 @@ public class EchoServlet extends HttpServlet {
         final int timeout = C.http_bio_timeout()/2;
         try {
             Thread.sleep(timeout);
-        } catch (InterruptedException e) {
+            final String s = C.get_post_data(req);
+            resp.getWriter().println(String.format("Your Post:%s\nResponse:%s #from %s\n",
+                    s,
+                    s,
+                    H.hostname()));
+        } catch (Exception e) {
             _l.error(e.getMessage(), e);
         }
-
-        final String s = C.get_post_data(req);
-        C.output_str(resp, s, C.host_name());
     }
 
     private static final Logger _l = LoggerFactory.getLogger(EchoServlet.class);

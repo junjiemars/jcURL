@@ -63,10 +63,14 @@ public class SimpleAsyncServlet extends HttpServlet {
             @Override
             public void run() {
                 try {
-                    long start = System.currentTimeMillis();
-                    Thread.sleep(new Random().nextInt(2000));
-                    ctx.getResponse().getWriter().printf("Thread %s completed the task in %d ms.\n",
-                            H.tn(), H.tid());
+                    final long start = System.currentTimeMillis();
+                    Thread.sleep(new Random().nextInt(C.http_nio_timeout() / 3));
+                    ctx.getResponse().getWriter()
+                            .printf("#Thread [%s:%s] completed in %d ms.\n#From %s\n",
+                                    H.tn(),
+                                    H.tid(),
+                                    System.currentTimeMillis()-start,
+                                    H.hostname());
                 } catch (Exception e) {
                     _l.error(e.getMessage(), e);
                 } finally {

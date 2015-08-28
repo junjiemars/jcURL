@@ -5,6 +5,8 @@ import com.xw.http.NioHttpClient;
 import com.xw.http.Receiver;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
+import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 /**
  * Created by junjie on 8/18/15.
@@ -75,8 +76,19 @@ public class AsyncNioPureServlet extends HttpServlet {
 
         try {
             final NioHttpClient n = new NioHttpClient()
+                    // set the target uri
                     .to(uri)
+
+                    // set the posting data
                     .post(C.get_post_data(req))
+
+                    // Here: you can set your client cookies if you needed it.
+//                    .headers(HttpHeaderNames.COOKIE,
+//                            ClientCookieEncoder.STRICT.encode(
+//                                    new DefaultCookie("cookie0", "value0"),
+//                                    new DefaultCookie("cookie1", "value1")))
+
+                    // how to receive the reponse data is your job
                     .onReceive(new Receiver<String>() {
                         @Override
                         public void onReceive(final String s) {

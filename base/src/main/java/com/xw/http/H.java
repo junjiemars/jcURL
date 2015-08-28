@@ -4,11 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 /* just since JDK1.7 (Java7)
 import java.nio.file.Files;
@@ -25,7 +26,7 @@ public final class H {
 //    public static final String[] EMPTY_STR_ARRAY = new String[]{};
     private static final Charset _UTF8 = Charset.forName("UTF-8");
 
-    private static final Logger _out = LogManager.getLogger(H.class);
+    private static final Logger _l = LoggerFactory.getLogger(H.class);
 
     private H() {
     }
@@ -85,7 +86,7 @@ public final class H {
 //            final String n = ip.getHostName();
 //            return (n);
 //        } catch (final UnknownHostException e) {
-//            _out.error(e);
+//            _l.error(e);
 //        }
 //
 //        return (null);
@@ -108,9 +109,9 @@ public final class H {
         try {
             return (gson.fromJson(json, type));
         } catch (JsonSyntaxException e) {
-            _out.error(e);
+            _l.error(e.getMessage(), e);
         } catch (JsonParseException e) {
-            _out.error(e);
+            _l.error(e.getMessage(), e);
         }
 
         return (null);
@@ -130,7 +131,7 @@ public final class H {
 //        try {
 //            b = Files.readAllBytes(Paths.get(file));
 //        } catch (IOException e) {
-//            _out.error(e);
+//            _l.error(e);
 //            return (null);
 //        }
 //
@@ -140,13 +141,13 @@ public final class H {
 
     public static String read_file(final String file) {
         if (is_null_or_empty(file)) {
-            _out.error("<arg:file> is invalid");
+            _l.error("<arg:file> is invalid");
             return (null);
         }
 
         final File f = new File(file);
         if (!f.exists()) {
-            _out.warn(String.format("<file:%s> does not exists", file));
+            _l.warn(String.format("<file:%s> does not exists", file));
             return (null);
         }
 
@@ -169,9 +170,9 @@ public final class H {
                 }
             }
         } catch (final FileNotFoundException e) {
-            _out.error(e);
+            _l.error(e.getMessage(), e);
         } catch (final IOException e) {
-            _out.error(e);
+            _l.error(e.getMessage(), e);
         }
 
         return (new String(b, _UTF8));
@@ -183,13 +184,13 @@ public final class H {
 //                    StandardOpenOption.CREATE,
 //                    StandardOpenOption.TRUNCATE_EXISTING);
 //        } catch (IOException e) {
-//            _out.error(e);
+//            _l.error(e);
 //        }
 //    }
 
     public static void write_file(final String content, final String file) {
         if (is_null_or_empty(content) || is_null_or_empty(file)) {
-            _out.error("<arg:json:file> is invalid");
+            _l.error("<arg:json:file> is invalid");
             return;
         }
 
@@ -204,9 +205,9 @@ public final class H {
                 }
             }
         } catch (final FileNotFoundException e) {
-            _out.error(e);
+            _l.error(e.getMessage(), e);
         } catch (final IOException e) {
-            _out.error(e);
+            _l.error(e.getMessage(), e);
         }
     }
 
@@ -224,6 +225,11 @@ public final class H {
 
         return (d);
     }
+
+    public static final String hostname() {
+        return _hostname;
+    }
+
 
 //
 //    public static final Long str_to_long(final String s) {
@@ -266,4 +272,17 @@ public final class H {
         }
         return (r);
     }
+
+    private static final String _hostname() {
+
+        try {
+            final String h = String.format("[%s]", java.net.InetAddress.getLocalHost().getHostName());
+            return h;
+        } catch (UnknownHostException e) {
+            _l.error(e.getMessage(), e);
+        }
+        return "[host.unknown]";
+    }
+
+    private static final String _hostname = _hostname();
 }

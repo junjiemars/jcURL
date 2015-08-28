@@ -43,25 +43,6 @@ public final class C {
         return null;
     }
 
-    public static final <T extends ServletResponse> void output_str(final T resp, final String... s) {
-        try {
-            final PrintWriter w = resp.getWriter();
-            for (String i : s) {
-                w.printf("%s\n", i);
-            }
-            w.flush();
-            w.close();
-//            final ServletOutputStream o = resp.getOutputStream();
-//            for (String i : s) {
-//                o.println(i);
-//            }
-//            o.flush();
-//            o.close();
-        } catch (IOException e) {
-            _l.error(e.getMessage(), e);
-        }
-    }
-
     public static final String http_url() {
         return _http_url;
     }
@@ -74,31 +55,15 @@ public final class C {
         return _http_nio_timeout;
     }
 
-    public static final String host_name() {
-        return _localhost;
-    }
-
-    private static final String _localhost() {
-        try {
-            final String h = String.format("[%s]", java.net.InetAddress.getLocalHost().getHostName());
-            return h;
-        } catch (UnknownHostException e) {
-            _l.error(e.getMessage(), e);
-        }
-        return "[host.unknown]";
-    }
-
     static {
         _http_bio_timeout = H.str_to_int(System.getProperty("http.bio.timeout"), 1000);
         _http_nio_timeout = H.str_to_int(System.getProperty("http.nio.timeout"), 1000);
         _http_url = System.getProperty("http.url");
-        _localhost = _localhost();
     }
 
     private static final int _http_bio_timeout;
     private static final int _http_nio_timeout;
     private static final String _http_url;
-    private static final String _localhost;
 
     private static final Logger _l = LoggerFactory.getLogger(C.class);
 }
