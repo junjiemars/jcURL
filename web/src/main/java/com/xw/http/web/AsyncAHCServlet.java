@@ -29,9 +29,9 @@ public class AsyncAHCServlet extends HttpServlet {
 
         //        super.doPost(req, resp);
         final AsyncContext ctx = req.startAsync(req, resp);
-        ctx.setTimeout(C.http_nio_timeout());
+        ctx.setTimeout(A.http_nio_timeout());
 
-        final String uri = C.http_url();
+        final String uri = A.http_url();
         if (H.is_null_or_empty(uri)) {
             _l.warn("#Must specify the http.url");
             ctx.complete();

@@ -7,13 +7,8 @@ import com.xw.http.H;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.UnknownHostException;
 
 /**
  * Author:junjie
@@ -21,11 +16,11 @@ import java.net.UnknownHostException;
  * Target:<>
  */
 //@SpringBootApplication
-public final class C {
-    private C() {}
+public final class A {
+    private A() {}
 
     public static void main(String[] args) {
-//        SpringApplication.run(C.class, args);
+//        SpringApplication.run(A.class, args);
     }
 
     public static final String get_post_data(final HttpServletRequest req) {
@@ -65,5 +60,5 @@ public final class C {
     private static final int _http_nio_timeout;
     private static final String _http_url;
 
-    private static final Logger _l = LoggerFactory.getLogger(C.class);
+    private static final Logger _l = LoggerFactory.getLogger(A.class);
 }

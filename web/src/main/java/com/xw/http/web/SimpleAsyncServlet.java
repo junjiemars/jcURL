@@ -5,13 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.MessageFormat;
 import java.util.Random;
 
 /**
@@ -35,7 +32,7 @@ public class SimpleAsyncServlet extends HttpServlet {
         final AsyncContext ctx = req.startAsync(req, resp);
 
         // set the timeout
-        ctx.setTimeout(C.http_nio_timeout());
+        ctx.setTimeout(A.http_nio_timeout());
 
         _l.info("#Has original Request/Response object:{}", ctx.hasOriginalRequestAndResponse());
 
@@ -64,7 +61,7 @@ public class SimpleAsyncServlet extends HttpServlet {
             public void run() {
                 try {
                     final long start = System.currentTimeMillis();
-                    Thread.sleep(new Random().nextInt(C.http_nio_timeout() / 3));
+                    Thread.sleep(new Random().nextInt(A.http_nio_timeout() / 3));
                     ctx.getResponse().getWriter()
                             .printf("#Thread [%s:%s] completed in %d ms.\n#From %s\n",
                                     H.tn(),

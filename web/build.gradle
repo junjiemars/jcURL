@@ -36,6 +36,10 @@ war {
     }
 }
 
+configurations {
+//    runtime.exclude group: 'commons-logging', module: 'commons-logging'
+}
+
 dependencies {
     compile project(':NHttpClient')
     compile project(':sync')
@@ -44,8 +48,13 @@ dependencies {
     compile 'org.apache.httpcomponents:httpcomponents-asyncclient:4.0'
 //    compile 'org.apache.logging.log4j:log4j-api:2.1'
 //    compile 'org.apache.logging.log4j:log4j-core:2.1'
-    compile 'org.apache.logging.log4j:log4j-web:2.1'
-    compile 'org.springframework:spring-web:3.2.13.RELEASE'
+//    compile 'org.apache.logging.log4j:log4j-web:2.1'
+//    compile 'org.springframework:spring-web:3.2.13.RELEASE'
+    compile 'org.springframework:spring-webmvc:3.2.13.RELEASE'
+    compile ('org.springframework:spring-context:3.2.13.RELEASE') {
+        // exclude commons-logging, need fix it
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
     compile 'com.ning:async-http-client:1.9.29'
 
     compile 'org.slf4j:slf4j-api:1.7.12'

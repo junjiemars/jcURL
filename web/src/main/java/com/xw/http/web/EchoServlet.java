@@ -27,10 +27,10 @@ public class EchoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp); Http 1.1/405
 
-        final int timeout = C.http_bio_timeout()/2;
+        final int timeout = A.http_bio_timeout()/2;
         try {
             Thread.sleep(timeout);
-            final String s = C.get_post_data(req);
+            final String s = A.get_post_data(req);
             resp.getWriter().println(String.format("Your Post:%s\nResponse:%s #from %s\n",
                     s,
                     s,

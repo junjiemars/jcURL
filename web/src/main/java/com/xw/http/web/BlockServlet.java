@@ -22,7 +22,7 @@ public class BlockServlet extends HttpServlet {
 //        super.doPost(req, resp);
         try {
             long start = System.currentTimeMillis();
-            Thread.sleep(new Random().nextInt(C.http_bio_timeout() / 3));
+            Thread.sleep(new Random().nextInt(A.http_bio_timeout() / 3));
             resp.getWriter().printf("Thread %s completed the task in %d ms.\n",
                     H.tn(), H.tid());
 

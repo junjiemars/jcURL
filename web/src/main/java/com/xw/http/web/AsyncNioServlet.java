@@ -1,8 +1,6 @@
 package com.xw.http.web;
 
 import com.xw.http.*;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import org.slf4j.Logger;
@@ -35,16 +33,16 @@ public class AsyncNioServlet extends HttpServlet {
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
         final AsyncContext async = req.startAsync(req, resp);
-        async.setTimeout(C.http_nio_timeout());
+        async.setTimeout(A.http_nio_timeout());
 
-        final String uri = C.http_url();
+        final String uri = A.http_url();
         if (H.is_null_or_empty(uri)) {
             _l.info("#%s:<ENV:http.url> is null/empty", AsyncNioServlet.class.getSimpleName());
             return;
         }
 
 
-        NClient.request(new PostRequestBuilder(uri, C.get_post_data(req)) {
+        NClient.request(new PostRequestBuilder(uri, A.get_post_data(req)) {
             @Override
             public void setup(PostRequestBuilder builder) {
                 headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;utf-8");
@@ -61,7 +59,7 @@ public class AsyncNioServlet extends HttpServlet {
                             try {
                                 final PrintWriter w = r.getWriter();
                                 w.write(s);
-//                                w.write("\n" + C.host_name()+"\n");
+//                                w.write("\n" + A.host_name()+"\n");
                                 w.flush();
                             } catch (IOException ioe) {
                                 _l.error(ioe.getMessage(), ioe);

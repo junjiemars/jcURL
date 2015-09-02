@@ -5,8 +5,6 @@ import com.xw.http.NioHttpClient;
 import com.xw.http.Receiver;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.codec.http.cookie.ClientCookieEncoder;
-import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +25,9 @@ public class AsyncNioPureServlet extends HttpServlet {
 //        super.doGet(req, resp);
 
         final AsyncContext ctx = req.startAsync(req, resp);
-        ctx.setTimeout(C.http_nio_timeout());
+        ctx.setTimeout(A.http_nio_timeout());
 
-        final String uri = C.http_url();
+        final String uri = A.http_url();
         if (H.is_null_or_empty(uri)) {
             _l.info("#%s:<ENV:http.url> is null/empty", AsyncNioServlet.class.getSimpleName());
             return;
@@ -66,9 +64,9 @@ public class AsyncNioPureServlet extends HttpServlet {
 //        super.doPost(req, resp);
 
         final AsyncContext ctx = req.startAsync(req, resp);
-        ctx.setTimeout(C.http_nio_timeout());
+        ctx.setTimeout(A.http_nio_timeout());
 
-        final String uri = C.http_url();
+        final String uri = A.http_url();
         if (H.is_null_or_empty(uri)) {
             _l.info("#%s:<ENV:http.url> is null/empty", AsyncNioServlet.class.getSimpleName());
             return;
@@ -80,7 +78,7 @@ public class AsyncNioPureServlet extends HttpServlet {
                     .to(uri)
 
                     // set the posting data
-                    .post(C.get_post_data(req))
+                    .post(A.get_post_data(req))
 
                     // Here: you can set your client cookies if you needed it.
 //                    .headers(HttpHeaderNames.COOKIE,
