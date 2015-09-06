@@ -13,7 +13,7 @@
     <!-- Maps '/' requests to the 'home' view -->
     <!--<mvc:view-controller path="/spring/*" view-name="index.html"/>-->
 
-    <context:component-scan base-package="com.xw.http.web.spring"/>
+    <context:component-scan base-package="com.xws.nio.web.spring"/>
     <!--<bean class="com.xw.http.web.spring.AsyncPureControllerd="simplex" />-->
 
     <!--<mvc:message-converters>-->

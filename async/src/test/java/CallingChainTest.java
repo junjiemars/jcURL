@@ -1,4 +1,5 @@
-import com.xw.http.*;
+import com.xws.nio.base.*;
+import com.xws.nio.client.*;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;

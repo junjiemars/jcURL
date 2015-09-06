@@ -1,25 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'war'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-version = '1.0'
 def archive_name = 'nio'
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-    maven {
-       // netty.io maven repo
-       url "http://clinker.netty.io/nexus/content/repositories/snapshots"
-    }
-}
-
-//jar {
-//    //baseName = archive_name + '.jar'
-//    version = version
-//}
 
 war {
     archiveName = archive_name + '.war'
@@ -43,23 +25,20 @@ configurations {
 dependencies {
     compile project(':NHttpClient')
     compile project(':sync')
+
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
-    compile 'org.apache.httpcomponents:httpclient:4.4.1'
-    compile 'org.apache.httpcomponents:httpcomponents-asyncclient:4.0'
-//    compile 'org.apache.logging.log4j:log4j-api:2.1'
-//    compile 'org.apache.logging.log4j:log4j-core:2.1'
-//    compile 'org.apache.logging.log4j:log4j-web:2.1'
-//    compile 'org.springframework:spring-web:3.2.13.RELEASE'
+
+//    compile 'org.apache.httpcomponents:httpclient:4.4.1'
+//    compile 'org.apache.httpcomponents:httpcomponents-asyncclient:4.0'
+
     compile 'org.springframework:spring-webmvc:3.2.13.RELEASE'
     compile ('org.springframework:spring-context:3.2.13.RELEASE') {
         // exclude commons-logging, need fix it
         exclude group: 'commons-logging', module: 'commons-logging'
     }
-    compile 'com.ning:async-http-client:1.9.29'
 
-    compile 'org.slf4j:slf4j-api:1.7.12'
-    compile 'ch.qos.logback:logback-core:1.1.3'
-    compile 'ch.qos.logback:logback-classic:1.1.3'
+    compile "org.slf4j:slf4j-api:${System.getProperty('slf4j-api_version')}"
+    compile "ch.qos.logback:logback-core:${System.getProperty('logback_version')}"
+    compile "ch.qos.logback:logback-classic:${System.getProperty('logback_version')}"
 
-    //testCompile('junit:junit')
 }

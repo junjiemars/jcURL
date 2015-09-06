@@ -11,7 +11,7 @@
 
     <servlet>
         <servlet-name>Block</servlet-name>
-        <servlet-class>com.xw.http.web.BlockServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.BlockServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Block</servlet-name>
@@ -20,7 +20,7 @@
 
     <servlet>
         <servlet-name>SimpleAsync</servlet-name>
-        <servlet-class>com.xw.http.web.SimpleAsyncServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.SimpleAsyncServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -30,7 +30,7 @@
 
     <servlet>
         <servlet-name>Async</servlet-name>
-        <servlet-class>com.xw.http.web.AsyncNioServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.AsyncNioServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -40,7 +40,7 @@
 
     <servlet>
         <servlet-name>AsyncPure</servlet-name>
-        <servlet-class>com.xw.http.web.AsyncNioPureServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.AsyncNioPureServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -50,7 +50,7 @@
 
     <servlet>
         <servlet-name>AsyncPurePooled</servlet-name>
-        <servlet-class>com.xw.http.web.AsyncNioPurePooledServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.AsyncNioPurePooledServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -60,7 +60,7 @@
 
     <servlet>
         <servlet-name>AsyncPureContained</servlet-name>
-        <servlet-class>com.xw.http.web.AsyncNioPureContainedServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.AsyncNioPureContainedServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -70,7 +70,7 @@
 
     <servlet>
         <servlet-name>AsyncAHC</servlet-name>
-        <servlet-class>com.xw.http.web.AsyncAHCServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.AsyncAHCServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -80,7 +80,7 @@
 
     <servlet>
         <servlet-name>AsyncHAC</servlet-name>
-        <servlet-class>com.xw.http.web.AsyncHACServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.AsyncHACServlet</servlet-class>
         <async-supported>true</async-supported>
     </servlet>
     <servlet-mapping>
@@ -90,7 +90,7 @@
 
     <servlet>
         <servlet-name>Sync</servlet-name>
-        <servlet-class>com.xw.http.web.SyncServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.SyncServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -100,7 +100,7 @@
 
     <servlet>
         <servlet-name>Echo</servlet-name>
-        <servlet-class>com.xw.http.web.EchoServlet</servlet-class>
+        <servlet-class>com.xws.nio.web.EchoServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

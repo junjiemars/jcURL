@@ -13,12 +13,19 @@ subprojects {
     sourceCompatibility = 1.6
     version = '1.0'
 
+    System.setProperty('junit_version', '4.11')
+    System.setProperty('slf4j-api_version', '1.7.12');
+    System.setProperty('logback_version', '1.1.3')
+
     repositories {
-//        mavenCentral()
+        mavenCentral()
         mavenLocal()
         maven {
-            url 'http://mirrors.ibiblio.org/pub/mirrors/maven2'
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
         }
+//        maven {
+//
+//        }
     }
 
 //    allprojects {
