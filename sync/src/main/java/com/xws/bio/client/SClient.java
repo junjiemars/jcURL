@@ -1,4 +1,4 @@
-package com.xws.nio.base.sync;
+package com.xws.bio.client;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;

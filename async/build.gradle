@@ -28,7 +28,7 @@ task uberjar(type: Jar, dependsOn: jar/*,dependsOn:[':compileJava',':compileGroo
     manifest {
         attributes(
                 'Create-By': System.getProperty('java.version'),
-                'Main-Class': "${System.getProperty('entry.class') ?: 'Core'}",
+                'Main-Class': "${System.getProperty('entry.class') ?: 'com.xws.nio.client.Core'}",
                 'Build-Version': version,
                 'Build-Date': new Date()
         )

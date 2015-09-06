@@ -3,10 +3,11 @@
 include 'base'
 
 include 'async'
-rootProject.children.find { it.name == 'async' }.name = 'NHttpClient'
+rootProject.children.find { it.name == 'async' }.name = 'async-client'
 
 include 'sync'
+rootProject.children.find { it.name == 'sync' }.name = 'sync-client'
 
 include 'web'
-rootProject.children.find { it.name == 'web' }.name = 'NHttpWeb'
+rootProject.children.find { it.name == 'web' }.name = 'web-pattern'
 

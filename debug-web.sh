@@ -17,7 +17,7 @@ JPS_WEB=${JPS_WEB:-"Bootstrap"}
 ## for Idea
 kill -15 $(jps | grep ${JPS_WEB} | tr -d ${JPS_WEB})
 rm -rv ${WEB_DIR}nio*
-./gradlew :NHttpWeb:war
+./gradlew :web-pattern:war
 cp -v web/build/libs/nio.war ${WEB_DIR}
 JAVA_OPTS="-Dhttp.url=${HTTP_URL} -Dhttp.nio.timeout=${HTTP_NIO_TIMEOUT}" \
     VER=7062 \

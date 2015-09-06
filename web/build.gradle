@@ -23,8 +23,8 @@ configurations {
 }
 
 dependencies {
-    compile project(':NHttpClient')
-    compile project(':sync')
+    compile project(':async-client')
+    compile project(':sync-client')
 
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
 

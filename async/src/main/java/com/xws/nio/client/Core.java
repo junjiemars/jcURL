@@ -13,11 +13,9 @@ import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -123,154 +121,62 @@ public final class Core {
             Options.save(options, save);
         }
 
-        if (options.concurrent() <= 0) {
-            (HttpMethod.POST.equals(options.method()) ? _http_post(options) : _http_get(options)).call();
-        } else {
-            Runtime.getRuntime().availableProcessors();
-            final ExecutorService e = Executors.newFixedThreadPool(options.cpu() > 0 ? options.cpu() : options.concurrent());
-            final Set<Callable<Boolean>> invokes = new HashSet<Callable<Boolean>>(options.concurrent());
 
-            for (int i = 0; i < options.concurrent(); i++) {
-                invokes.add(new Callable<Boolean>() {
-                    @Override
-                    public Boolean call() throws Exception {
-                        return ((HttpMethod.POST.equals(options.method())
-                                ? _http_post(options) : _http_get(options)).call());
-                    }
-                });
+        for (int i = 0; i < options.concurrent(); i++) {
+            if (HttpMethod.GET.equals(options.method())) {
+                _get(options);
+            } else if (HttpMethod.POST.equals(options.method())) {
+                _post(options);
             }
-
-            try {
-                e.invokeAll(invokes);
-            } catch (final InterruptedException ex) {
-                _l.error(ex.getMessage(), ex);
-            } finally {
-                e.shutdown();
-            }
-
-            while (!e.isTerminated()) {
-
-            }
-            _l.info("###$$$");
         }
 
+//        try {
+//            _l.info("####_e.isTerminated:{}", _e.isTerminated());
+//            _e.awaitTermination(30, TimeUnit.SECONDS);
+//        } catch (InterruptedException ie) {
+//            _l.error(ie.getMessage(), ie);
+//        } finally {
+//
+//        }
 
         _l.info(H.pad_right("*", A.OPTION_PROMPT_LEN, "="));
+
     }
 
-    private static Tuple<RequestBuilder<GetRequestBuilder>, PipelineBuilder, Boolean>
-    _http_get(final Options options) {
-        _info(options);
-
-        final RequestBuilder<GetRequestBuilder> requested = new GetRequestBuilder(options.url()) {
-            @Override
-            public void setup(final GetRequestBuilder builder) {
-                builder.headers().set(HttpHeaderNames.COOKIE,
-                        ClientCookieEncoder.STRICT.encode(
-                                new DefaultCookie("my-cookie", "foo"),
-                                new DefaultCookie("another-cookie", "bar")));
-            }
-        };
-
-        final PipelineBuilder pipelined = new PipelineBuilder(options.timeout()) {
-            @Override
-            public void setup(final ChannelPipeline pipeline) {
-                // default http header processing
-                if (options.header()) {
-                    pipeline.addLast(new DefaultHeaderHandler<Integer>() {
+    private static final void _post(final Options o) {
+        try {
+            final NioHttpClient c = new NioHttpClient()
+                    .to(o.url())
+                    .post(o.data())
+                    .onReceive(new Receiver<String>() {
                         @Override
-                        protected Integer process(HttpResponse response) {
-                            return null;
+                        public void onReceive(final String s) {
+                            _l.info("<Received>:\n{}", s);
+                            _release(o);
                         }
                     });
-                }
-
-                // default http content processing
-                if (options.body()) {
-                    pipeline.addLast(new DefaultContentHandler<Integer>() {
-                        @Override
-                        protected void process(final String s) {
-                            _l.info(String.format("<BEGIN OF CONTENT:%s>", s.length()));
-                            _l.info(s);
-                            _l.info("<END OF CONTENT>");
-                        }
-                    });
-                }
-            }
-        };
-
-        return (new Tuple<RequestBuilder<GetRequestBuilder>, PipelineBuilder, Boolean>(requested, pipelined) {
-            @Override
-            public Boolean call() {
-                return (NClient.request(x(), y()));
-            }
-        });
+        } catch (Exception ex) {
+            _l.error(ex.getMessage(), ex);
+        }
     }
 
-    private static Tuple<RequestBuilder<PostRequestBuilder>, PipelineBuilder, Boolean>
-    _http_post(final Options options) {
-        _info(options);
-        final Long begin = System.currentTimeMillis();
-
-        final RequestBuilder<PostRequestBuilder> requested = new PostRequestBuilder(options.url(), options.data()) {
-            @Override
-            public void setup(final PostRequestBuilder builder) {
-
-            }
-        };
-        final PipelineBuilder pipelined = new PipelineBuilder(options.timeout()) {
-            @Override
-            public void setup(ChannelPipeline pipeline) {
-                if (options.header() /* show the response's headers? */) {
-                    pipeline.addLast(new DefaultHeaderHandler<Integer>() {
+    private static final void _get(final Options o) {
+        try {
+            final NioHttpClient c = new NioHttpClient()
+                    .to(o.url())
+                    .get()
+                    .onReceive(new Receiver<String>() {
                         @Override
-                        protected Integer process(HttpResponse response) {
-                            _l.info(H.pad_right(String.format("#R-HEADER<Tid:%s>", H.tid()),
-                                    A.OPTION_PROMPT_LEN, "="));
-                            _l.info(String.format("<status>: %s", response.status()));
-                            _l.info(String.format("<version>: %s", response.protocolVersion()));
-
-                            if (!response.headers().isEmpty()) {
-                                for (CharSequence name : response.headers().names()) {
-                                    for (CharSequence value : response.headers().getAll(name)) {
-                                        _l.info(String.format("<H>%s: %s", name, value));
-                                    }
-                                }
-                            }
-                            return (response.headers().isEmpty() ? 0 : response.headers().names().size());
+                        public void onReceive(final String s) {
+                            _l.info("<Received>:\n{}", s);
+                            _release(o);
                         }
                     });
-                }
-
-                // default http content processing
-                pipeline.addLast(new DefaultContentHandler<Integer>(A.OPTION_BLOCK_SIZE) {
-                    @Override
-                    protected void process(String s) {
-                        if (!options.body()) return;
-
-                        _l.info(H.pad_right(String.format("#R-CONTENT-A<Tid:%d|Len:%d|#%d>",
-                                        H.tid(), s.length(), _sn.getAndIncrement()),
-                                A.OPTION_PROMPT_LEN, "="));
-                        _l.info(s);
-                        _l.info(H.pad_right(String.format("#R-CONTENT-Z<Tid:%d|Len:%d|#%d>",
-                                        H.tid(), s.length(), _sn.get()),
-                                A.OPTION_PROMPT_LEN, "="));
-
-                        _l.info(String.format("elapsed:%d", System.currentTimeMillis() - begin));
-                    }
-                });
-
-            }
-        };
-
-
-        return (new Tuple<RequestBuilder<PostRequestBuilder>, PipelineBuilder, Boolean>(requested, pipelined) {
-            @Override
-            public Boolean call() {
-                return (NClient.request(x(), y()));
-            }
-        });
+        } catch (Exception ex) {
+            _l.error(ex.getMessage(), ex);
+        }
     }
+
 
     private static void _info(Options options) {
         _l.info(H.pad_right(String.format("PWD<Tid:%s>", H.tid()), A.OPTION_PROMPT_LEN, "="));
@@ -303,5 +209,11 @@ public final class Core {
         System.exit(0);
     }
 
-    private static final AtomicInteger _sn = new AtomicInteger(0);
+    private static final void _release(final Options o) {
+        if (o.concurrent() == _sn.incrementAndGet()) {
+            NioHttpClient.release();
+        }
+    }
+
+    private static final AtomicInteger _sn = new AtomicInteger();
 }

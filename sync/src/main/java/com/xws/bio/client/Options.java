@@ -1,4 +1,4 @@
-package com.xws.nio.base.sync;
+package com.xws.bio.client;
 
 
 import com.google.gson.reflect.TypeToken;
