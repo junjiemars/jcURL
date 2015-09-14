@@ -53,7 +53,7 @@ public final class A {
     static {
         _http_bio_timeout = H.str_to_int(System.getProperty("http.bio.timeout"), 1000);
         _http_nio_timeout = H.str_to_int(System.getProperty("http.nio.timeout"), 1000);
-        _http_url = System.getProperty("http.url");
+        _http_url = System.getProperty("http.url", "http://www.baidu.com");
     }
 
     private static final int _http_bio_timeout;

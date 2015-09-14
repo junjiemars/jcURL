@@ -39,13 +39,8 @@ public class SyncServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
 //        super.doPost(req, resp);
-        final String uri = A.http_url();
-        if (H.is_null_or_empty(uri)) {
-            _l.info("<R:ENV:http.url> is null/empty");
-            return;
-        }
 
-        final RequestBuilder<HttpPost> requested = new PostRequestBuilder(uri, A.get_post_data(req)) {
+        final RequestBuilder<HttpPost> requested = new PostRequestBuilder(A.http_url(), A.get_post_data(req)) {
             @Override
             public void setup(final HttpPost post) {
                 final StringEntity entity = new StringEntity(content,

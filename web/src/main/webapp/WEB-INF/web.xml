@@ -29,16 +29,6 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>Async</servlet-name>
-        <servlet-class>com.xws.nio.web.AsyncNioServlet</servlet-class>
-        <async-supported>true</async-supported>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Async</servlet-name>
-        <url-pattern>/nio</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
         <servlet-name>AsyncPure</servlet-name>
         <servlet-class>com.xws.nio.web.AsyncNioPureServlet</servlet-class>
         <async-supported>true</async-supported>
@@ -66,26 +56,6 @@
     <servlet-mapping>
         <servlet-name>AsyncPureContained</servlet-name>
         <url-pattern>/contained</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>AsyncAHC</servlet-name>
-        <servlet-class>com.xws.nio.web.AsyncAHCServlet</servlet-class>
-        <async-supported>true</async-supported>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AsyncAHC</servlet-name>
-        <url-pattern>/ahc</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>AsyncHAC</servlet-name>
-        <servlet-class>com.xws.nio.web.AsyncHACServlet</servlet-class>
-        <async-supported>true</async-supported>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AsyncHAC</servlet-name>
-        <url-pattern>/hac</url-pattern>
     </servlet-mapping>
 
     <servlet>

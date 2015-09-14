@@ -30,21 +30,16 @@ public final class AsyncNioPureContainedServlet extends HttpServlet {
         final AsyncContext ctx = req.startAsync(req, resp);
         ctx.setTimeout(A.http_nio_timeout());
 
-        final String uri = A.http_url();
-        if (H.is_null_or_empty(uri)) {
-            _l.info("#%s:<ENV:http.url> is null/empty", AsyncNioServlet.class.getSimpleName());
-            return;
-        }
-
         try {
             final NioHttpClient n = new NioHttpClient()
-                    .to(uri)
+                    .to(A.http_url())
                     .post(A.get_post_data(req))
                     .onReceive(new Receiver<String>() {
                         @Override
                         public void onReceive(final String s) {
 //                            _l.debug(s);
 
+                            // the container's worker will run the following code
                             ctx.start(new Runnable() {
                                 @Override
                                 public void run() {

@@ -32,17 +32,9 @@ public class AsyncPooledSpringController {
 
         final DeferredResult<String> result = new DeferredResult<String>(A.http_nio_timeout());
 
-        // nio http client call
-        final String uri = A.http_url();
-        if (H.is_null_or_empty(uri)) {
-            _l.info("#%s:<ENV:http.url> is null/empty", AsyncSpringController.class.getSimpleName());
-            result.setErrorResult(String.format("#invalid url:%s", uri));
-            return result;
-        }
-
         try {
             final NioHttpClient n = new NioHttpClient()
-                    .to(uri)
+                    .to(A.http_url())
                     .get()
                     .headers(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
                     .headers(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE)
