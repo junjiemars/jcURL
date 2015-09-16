@@ -16,8 +16,8 @@ dependencies {
     compile project(':base')
     compile 'org.apache.httpcomponents:httpclient:4.4.1'
     compile 'gnu.getopt:java-getopt:1.0.13'
-    compile 'org.apache.logging.log4j:log4j-api:2.1'
-    compile 'org.apache.logging.log4j:log4j-core:2.1'
+    compile "org.slf4j:slf4j-api:${System.getProperty('slf4j-api_version')}"
+    compile "ch.qos.logback:logback-classic:${System.getProperty('logback_version')}"
 }
 
 task uberjar(type: Jar, dependsOn: jar/*,dependsOn:[':compileJava',':compileGroovy'*/) {

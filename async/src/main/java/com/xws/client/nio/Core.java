@@ -186,8 +186,9 @@ public final class Core {
         if (null != m) {
             _l.info(m);
         }
-        _l.info(String.format("usage: %s %s", A.NAME,
-                "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header] [-t|--timeout] [-m|--concurrent]"));
+        _l.info("usage: {} {}",
+                A.NAME,
+                "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header] [-t|--timeout] [-m|--concurrent]");
         _l.info("\t--url: specify the http url");
         _l.info("\t--get: http get method");
         _l.info("\t--post: http post method");

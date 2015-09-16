@@ -38,7 +38,6 @@ dependencies {
     }
 
     compile "org.slf4j:slf4j-api:${System.getProperty('slf4j-api_version')}"
-    compile "ch.qos.logback:logback-core:${System.getProperty('logback_version')}"
     compile "ch.qos.logback:logback-classic:${System.getProperty('logback_version')}"
 
 }
