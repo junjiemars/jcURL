@@ -1,4 +1,4 @@
-package com.xws.nio.client;
+package com.xws.client.nio;
 
 import com.xws.nio.base.H;
 import io.netty.bootstrap.Bootstrap;

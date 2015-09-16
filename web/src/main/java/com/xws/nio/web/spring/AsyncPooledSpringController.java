@@ -1,8 +1,7 @@
 package com.xws.nio.web.spring;
 
-import com.xws.nio.base.H;
-import com.xws.nio.client.NioHttpClient;
-import com.xws.nio.client.Receiver;
+import com.xws.client.nio.NioHttpClient;
+import com.xws.client.nio.Receiver;
 import com.xws.nio.web.A;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;

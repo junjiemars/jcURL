@@ -1,4 +1,4 @@
-package com.xws.bio.client;
+package com.xws.client.bio;
 
 
 import com.google.gson.reflect.TypeToken;

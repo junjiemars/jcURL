@@ -1,4 +1,4 @@
-package com.xws.nio.client;
+package com.xws.client.nio;
 
 
 import com.google.gson.reflect.TypeToken;

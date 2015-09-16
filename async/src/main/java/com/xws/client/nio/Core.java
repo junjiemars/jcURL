@@ -1,21 +1,12 @@
-package com.xws.nio.client;
+package com.xws.client.nio;
 
 import com.xws.nio.base.H;
-import com.xws.nio.base.Tuple;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.cookie.*;
-import io.netty.handler.codec.http.cookie.DefaultCookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

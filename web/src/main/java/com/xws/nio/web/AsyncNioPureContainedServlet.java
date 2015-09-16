@@ -1,8 +1,7 @@
 package com.xws.nio.web;
 
-import com.xws.nio.base.H;
-import com.xws.nio.client.NioHttpClient;
-import com.xws.nio.client.Receiver;
+import com.xws.client.nio.NioHttpClient;
+import com.xws.client.nio.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.xws.bio.client;
+package com.xws.client.bio;
 
 import com.xws.nio.base.H;
 import com.xws.nio.base.Tuple;

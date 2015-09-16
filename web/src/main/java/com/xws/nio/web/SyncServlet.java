@@ -1,9 +1,8 @@
 package com.xws.nio.web;
 
-import com.xws.nio.base.H;
-import com.xws.bio.client.PostRequestBuilder;
-import com.xws.bio.client.RequestBuilder;
-import com.xws.bio.client.SClient;
+import com.xws.client.bio.PostRequestBuilder;
+import com.xws.client.bio.RequestBuilder;
+import com.xws.client.bio.SClient;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
