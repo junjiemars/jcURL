@@ -1,6 +1,6 @@
 package com.xws.nio.web;
 
-import com.xws.client.nio.NioHttpClient;
+import com.xws.client.nio.JcURL;
 import com.xws.client.nio.Receiver;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -29,7 +29,7 @@ public class AsyncNioPureServlet extends HttpServlet {
         ctx.setTimeout(A.http_nio_timeout());
 
         try {
-            final NioHttpClient n = new NioHttpClient()
+            final JcURL n = new JcURL()
                     .to(A.http_url())
                     .get()
                     .headers(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)
@@ -62,7 +62,7 @@ public class AsyncNioPureServlet extends HttpServlet {
         ctx.setTimeout(A.http_nio_timeout());
 
         try {
-            final NioHttpClient n = new NioHttpClient()
+            final JcURL n = new JcURL()
                     // set the target uri
                     .to(A.http_url())
 

@@ -1,7 +1,7 @@
 package com.xws.nio.web.spring;
 
 
-import com.xws.client.nio.NioHttpClient;
+import com.xws.client.nio.JcURL;
 import com.xws.client.nio.Receiver;
 import com.xws.nio.web.A;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -30,7 +30,7 @@ public class AsyncSpringController {
         final DeferredResult<String> result = new DeferredResult<String>(A.http_nio_timeout());
 
         try {
-            final NioHttpClient n = new NioHttpClient()
+            final JcURL n = new JcURL()
                     .to(A.http_url())
                     .get()
                     .headers(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE)

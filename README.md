@@ -1,10 +1,10 @@
-# NHttpClient
-HttpClient based on [netty](https://github.com/netty/netty)
+# jcURL
+Implements [cURL](https://github.com/bagder/curl) in Java which can be used as
+   a command or run in server environment. It based on [netty](https://github.com/netty/netty).
 
-## How to check memory leaks
--Dio.netty.leakDetectionLevel=advanced
+## How to play as a CLI command
 
-## How to play around
+## How to play in server environment
 
 
 

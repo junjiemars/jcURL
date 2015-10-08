@@ -1,6 +1,6 @@
 package com.xws.nio.web;
 
-import com.xws.client.nio.NioHttpClient;
+import com.xws.client.nio.JcURL;
 import com.xws.client.nio.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public final class AsyncNioPurePooledServlet extends HttpServlet {
         ctx.setTimeout(A.http_nio_timeout());
 
         try {
-            final NioHttpClient n = new NioHttpClient()
+            final JcURL n = new JcURL()
                     .to(A.http_url())
                     .post(A.get_post_data(req))
                     .onReceive(new Receiver<String>() {

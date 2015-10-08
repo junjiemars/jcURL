@@ -22,7 +22,7 @@ import java.security.InvalidParameterException;
 /**
  * Created by junjie on 8/17/15.
  */
-public final class NioHttpClient<N extends NioHttpClient<N> >  {
+public final class JcURL<N extends JcURL<N>>  {
 
     private final Bootstrap _b;
     //    private final EventLoopGroup _g;
@@ -31,7 +31,7 @@ public final class NioHttpClient<N extends NioHttpClient<N> >  {
     private Charset _cs;
 
 
-    public NioHttpClient() {
+    public JcURL() {
         _b = new Bootstrap()
                 .group(_g/* = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors())*/)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
@@ -187,7 +187,7 @@ public final class NioHttpClient<N extends NioHttpClient<N> >  {
 
 //    private final static EventExecutorGroup _e = new DefaultEventExecutorGroup(200);
 
-    private final static AsciiString _ua = new AsciiString("NioHttpClient");
+    private final static AsciiString _ua = new AsciiString("JcURL");
 
     private final static String _default_http_response_handler_name =
             String.format("%s<%s>",
@@ -199,5 +199,5 @@ public final class NioHttpClient<N extends NioHttpClient<N> >  {
                     SimpleChannelInboundHandler.class.getSimpleName(),
                     HttpContent.class.getSimpleName());
 
-    private final static Logger _l = LoggerFactory.getLogger(NioHttpClient.class);
+    private final static Logger _l = LoggerFactory.getLogger(JcURL.class);
 }

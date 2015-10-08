@@ -1,4 +1,4 @@
-//rootProject.name = 'NHttpClient'
+//rootProject.name = 'jcURL'
 
 include 'base'
 

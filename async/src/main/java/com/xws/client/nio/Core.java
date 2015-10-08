@@ -136,7 +136,7 @@ public final class Core {
 
     private static final void _post(final Options o) {
         try {
-            final NioHttpClient c = new NioHttpClient()
+            final JcURL c = new JcURL()
                     .to(o.url())
                     .post(o.data())
                     .onReceive(new Receiver<String>() {
@@ -153,7 +153,7 @@ public final class Core {
 
     private static final void _get(final Options o) {
         try {
-            final NioHttpClient c = new NioHttpClient()
+            final JcURL c = new JcURL()
                     .to(o.url())
                     .get()
                     .onReceive(new Receiver<String>() {
@@ -203,7 +203,7 @@ public final class Core {
 
     private static final void _release(final Options o) {
         if (o.concurrent() == _sn.incrementAndGet()) {
-            NioHttpClient.release();
+            JcURL.release();
         }
     }
 

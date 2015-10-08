@@ -13,6 +13,10 @@ dependencies {
 
 }
 
+jar {
+    archiveName = 'jcurl-' + version + '.jar'
+}
+
 task uberjar(type: Jar, dependsOn: jar/*,dependsOn:[':compileJava',':compileGroovy'*/) {
     //jar.baseName="NHttpClient"
     from files(sourceSets.main.output.classesDir)
