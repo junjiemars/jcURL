@@ -189,11 +189,11 @@ public final class Core {
         _l.info("usage: {} {}",
                 A.NAME,
                 "[-h|--help] [-u|--url] [-g|--get] [-p|--post] [-c|--conf] [-s|--save] [-H|--header] [-t|--timeout] [-m|--concurrent]");
-        _l.info("\t--url: specify the http url");
-        _l.info("\t--get: http get method");
-        _l.info("\t--post: http post method");
-        _l.info("\t--conf: specify the configuration file");
-        _l.info("\t--save: save configuration to the file");
+        _l.info("\t--url: specify http url");
+        _l.info("\t--get: use http get method");
+        _l.info("\t--post: use http post method");
+        _l.info("\t--conf: specify configuration file");
+        _l.info("\t--save: save configuration to file");
         _l.info("\t--header: 0:header-content; 1:header-only; 2:content-only");
         _l.info("\t--timeout: default 0 milliseconds");
         _l.info("\t--concurrent: concurrently run");

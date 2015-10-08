@@ -24,7 +24,7 @@ public class BlockServlet extends HttpServlet {
             long start = System.currentTimeMillis();
             Thread.sleep(new Random().nextInt(A.http_bio_timeout() / 3));
             resp.getWriter().printf("Thread %s completed the task in %d ms.\n",
-                    H.tn(), H.tid());
+                    H.tid(), System.currentTimeMillis()-start);
 
         } catch (Exception ex) {
             _l.error(ex.getMessage(), ex);

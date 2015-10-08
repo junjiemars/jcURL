@@ -4,8 +4,9 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.io.IOException;
 
@@ -41,19 +42,19 @@ public final class SClient {
             c.execute(t, pipelined);
             return (true);
         } catch (final Exception e) {
-            _l.error(e);
+            _l.error(e.getMessage(), e);
         } finally {
             try {
                 c.close();
             } catch (IOException e) {
-                _l.error(e);
+                _l.error(e.getMessage(), e);
             }
         }
 
         return (false);
     }
 
-    private static final Logger _l = LogManager.getLogger(SClient.class);
+    private static final Logger _l = LoggerFactory.getLogger(SClient.class);
 }
 
 
