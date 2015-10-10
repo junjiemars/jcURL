@@ -23,10 +23,14 @@ public final class Options {
     //    private static final Pattern _SPLIT_NODES = Pattern.compile("\\s*:\\s*");
     private static final Type _type = new TypeToken<Options>() {}.getType();
 
+    public static final String H_POST = "POST";
+
     private boolean _has_head;
     private boolean _is_verbose;
     private final List<Integer> _unknown_opts = new ArrayList<Integer>();
     private final List<String> _urls = new ArrayList<String>();
+    private String _data;
+    private String _request;
 
 
     public Options() {
@@ -68,6 +72,33 @@ public final class Options {
         return url;
     }
 
+    public final String data() {
+        return _data;
+    }
+
+    public final String data(final String data) {
+        if (H.is_null_or_empty(data)) {
+            return (_data = data);
+        }
+
+        final Matcher m = _data_pattern.matcher(data);
+        if (m.find()) {
+            final String f = H.read_file(m.group(1));
+            if (!H.is_null_or_empty(f)) {
+                return _data = f;
+            }
+        }
+        return data;
+    }
+
+    public final String request() {
+        return _request;
+    }
+
+    public final String request(final String command) {
+        return _request = command;
+    }
+
     public static Options read(final String conf) {
         final String j = H.read_file(conf);
         if (H.is_null_or_empty(j)) {
@@ -85,22 +116,6 @@ public final class Options {
     @Override
     public String toString() {
         return (H.to_json(this, _type));
-    }
-
-    private static String _rebuild_data(final String data) {
-        if (H.is_null_or_empty(data)) {
-            return (data);
-        }
-
-        final Matcher m = _data_pattern.matcher(data);
-        if (m.find()) {
-            _l.info(m.group(1));
-            final String f = H.read_file(m.group(1));
-            if (!H.is_null_or_empty(f)) {
-                return (f);
-            }
-        }
-        return (data);
     }
 
     private static final Logger _l = LoggerFactory.getLogger(Options.class);
