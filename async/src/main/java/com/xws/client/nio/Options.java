@@ -2,12 +2,15 @@ package com.xws.client.nio;
 
 
 import com.google.gson.reflect.TypeToken;
+import com.sun.javafx.UnmodifiableArrayList;
 import com.xws.nio.base.H;
 import io.netty.handler.codec.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,54 +23,50 @@ public final class Options {
     //    private static final Pattern _SPLIT_NODES = Pattern.compile("\\s*:\\s*");
     private static final Type _type = new TypeToken<Options>() {}.getType();
 
-    private String _url;
-    private HttpMethod _method;
-    private String _data;
-    private int _header; // 0:all; 1:header-only 2:content-only
-    private int _timeout;
-    private int _concurrent;
-    private int _cpu;
+    private boolean _has_head;
+    private boolean _is_verbose;
+    private final List<Integer> _unknown_opts = new ArrayList<Integer>();
+    private final List<String> _urls = new ArrayList<String>();
 
-    public Options(final String url, final HttpMethod method, final String data, final int header,
-                   final int timeout, final int concurrent, final int cpu) {
-        _url = url;
-        _method = method;
-        _header = header;
-        _data = _rebuild_data(data);
-        _timeout = timeout;
-        _concurrent = concurrent;
-        _cpu = cpu;
+
+    public Options() {
+    }
+
+    public final boolean has_head() {
+        return _has_head;
+    }
+
+    public final boolean is_verbose() {
+        return _is_verbose;
+    }
+
+    public final boolean is_verbose(boolean verbose) {
+        return _is_verbose = verbose;
+    }
+
+    public final List<Integer> unknown_opts() {
+        return _unknown_opts;
+    }
+    public final int unknown_opts(int i) {
+        _unknown_opts.add(i);
+        return i;
+    }
+
+    public final boolean has_head(final boolean head) {
+        return _has_head = head;
+    }
+    public final List<String> urls() {
+        return _urls;
     }
 
     public final String url() {
-        return (_url);
+        return _urls.remove(0);
     }
 
-    public final HttpMethod method() {
-        return (_method);
+    public final String url(final String url) {
+        _urls.add(url);
+        return url;
     }
-
-    public final String data() {
-        return (_data);
-    }
-
-    public final boolean header() {
-        return (_header == 0 || 1 == (_header & 1));
-    }
-
-    public final boolean body() {
-        return (_header == 0 || 2 == (_header & 2));
-    }
-
-    public final int timeout() {
-        return (_timeout);
-    }
-
-    public final int concurrent() {
-        return (_concurrent);
-    }
-
-    public final int cpu() { return (_cpu); }
 
     public static Options read(final String conf) {
         final String j = H.read_file(conf);

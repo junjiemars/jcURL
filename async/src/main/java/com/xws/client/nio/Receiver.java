@@ -1,5 +1,7 @@
 package com.xws.client.nio;
 
+import io.netty.channel.ChannelFuture;
+
 import java.nio.ByteBuffer;
 
 /**

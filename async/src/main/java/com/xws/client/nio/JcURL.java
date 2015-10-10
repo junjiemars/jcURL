@@ -106,6 +106,10 @@ public final class JcURL<N extends JcURL<N>>  {
     }
 
     public final <R extends Receiver> N onReceive(final R in) throws InvalidParameterException, IllegalStateException, InterruptedException {
+        return onReceive(in, true);
+    }
+
+    public final <R extends Receiver> N onReceive(final R in, final boolean async) throws InvalidParameterException, IllegalStateException, InterruptedException {
         if (null == in) {
             throw new InvalidParameterException("#R:<in> is invalid");
         }
@@ -115,7 +119,7 @@ public final class JcURL<N extends JcURL<N>>  {
 
         final StringBuffer buffer = new StringBuffer();
 
-        _b.handler(new ChannelInitializer<NioSocketChannel>() {
+        final ChannelFuture f = _b.handler(new ChannelInitializer<NioSocketChannel>() {
             @Override
             protected void initChannel(NioSocketChannel ch) throws Exception {
                 ch.pipeline()
@@ -134,30 +138,29 @@ public final class JcURL<N extends JcURL<N>>  {
                                     }
                                 })
                         .addLast(_http_content_handler_name,
-                        new SimpleChannelInboundHandler<HttpContent>() {
-                            @Override
-                            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-                                _l.error(cause.getMessage(), cause);
-                                ctx.close();
-                            }
+                                new SimpleChannelInboundHandler<HttpContent>() {
+                                    @Override
+                                    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                                        _l.error(cause.getMessage(), cause);
+                                        ctx.close();
+                                    }
 
-                            @Override
-                            protected void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws Exception {
+                                    @Override
+                                    protected void channelRead0(ChannelHandlerContext ctx, HttpContent msg) throws Exception {
 //                                for (String n : ctx.pipeline().names()) {
 //                                    _l.debug("#handler-name:{}", n);
 //                                }
 //                                _l.debug("#------------------------------");
 
-                                buffer.append(msg.content().toString(_cs));
+                                        buffer.append(msg.content().toString(_cs));
 
-                                if (msg instanceof LastHttpContent) {
-                                    ctx.close();
-                                }
-                            }
-                        });
+                                        if (msg instanceof LastHttpContent) {
+                                            ctx.close();
+                                        }
+                                    }
+                                });
             }
         })
-
                 .connect().addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
@@ -173,7 +176,11 @@ public final class JcURL<N extends JcURL<N>>  {
             }
         });
 
-        return (N) this;
+        if (!async) {
+            f.sync();
+        }
+
+        return (N)this;
     }
 
     public static final void release() {

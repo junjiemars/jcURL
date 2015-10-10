@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+System.setProperty('version', version)
+
 dependencies {
     testCompile "junit:junit:${System.getProperty('junit_version')}"
 
@@ -13,11 +15,8 @@ dependencies {
 
 }
 
-jar {
-    archiveName = 'jcurl-' + version + '.jar'
-}
-
 task uberjar(type: Jar, dependsOn: jar/*,dependsOn:[':compileJava',':compileGroovy'*/) {
+    archiveName = 'jcurl-' + version + '.jar'
     //jar.baseName="NHttpClient"
     from files(sourceSets.main.output.classesDir)
     // just copy log4j2.xml to classpath,
@@ -35,6 +34,8 @@ task uberjar(type: Jar, dependsOn: jar/*,dependsOn:[':compileJava',':compileGroo
                 'Build-Date': new Date()
         )
     }
+
+
 }
 
 
