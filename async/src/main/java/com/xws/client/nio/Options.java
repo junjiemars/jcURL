@@ -2,9 +2,7 @@ package com.xws.client.nio;
 
 
 import com.google.gson.reflect.TypeToken;
-import com.sun.javafx.UnmodifiableArrayList;
 import com.xws.nio.base.H;
-import io.netty.handler.codec.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

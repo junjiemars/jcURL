@@ -1,14 +1,10 @@
 package com.xws.client.nio;
 
-import com.xws.nio.base.H;
 import gnu.getopt.Getopt;
 import gnu.getopt.LongOpt;
-import io.netty.channel.ChannelFuture;
-import io.netty.handler.codec.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.System.out;
 
 /**
