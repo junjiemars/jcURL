@@ -7,7 +7,7 @@ dependencies {
 
     compile project(':base')
 
-    compile 'io.netty:netty-all:4.1.0.Beta8-SNAPSHOT'
+    compile 'io.netty:netty-all:4.1.2.Final'
     compile 'gnu.getopt:java-getopt:1.0.13'
     compile 'com.google.code.gson:gson:2.3.1'
     compile "org.slf4j:slf4j-api:${System.getProperty('slf4j-api_version')}"
